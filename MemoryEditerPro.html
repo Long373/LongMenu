@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Memory Editer Pro</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <style>
+.music-item-icon {
+    transition: transform 0.3s ease;
+}
+.item:active .music-item-icon {
+    transform: scale(1.2);
+}
+@keyframes neon-rainbow {
+    0%   { border-color: #ff0000; box-shadow: 0 0 10px #ff0000; }
+    20%  { border-color: #ffff00; box-shadow: 0 0 10px #ffff00; }
+    40%  { border-color: #00ff00; box-shadow: 0 0 10px #00ff00; }
+    60%  { border-color: #00ffff; box-shadow: 0 0 10px #00ffff; }
+    80%  { border-color: #0000ff; box-shadow: 0 0 10px #0000ff; }
+    100% { border-color: #ff0000; box-shadow: 0 0 10px #ff0000; }
+}
+
+.border-rainbow-active {
+
+    border: 2px solid red !important;
+    animation: neon-rainbow 3s linear infinite !important;
+}
+#tcSpeedInput::-webkit-inner-spin-button, 
+#tcSpeedInput::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+#tcSpeedInput {
+    -moz-appearance: textfield;
+}
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: transparent; font-family: -apple-system, sans-serif; overflow: hidden; }
+        #app-container { position: fixed; top: 0; left: 0; width: 400vw; height: 400vh; display: flex; justify-content: center; align-items: center; }
+        #music-visualizer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    z-index: 1; 
+    opacity: 0.25;
+    pointer-events: none;
+
+    display: none;
+}
+#waveWarning {
+    transition: opacity 0.3s ease;
+    padding-left: 10px; 
+    font-style: italic;
+}
+        #main-menu {
+            width: 300px; height: 300px; background: rgba(28, 28, 30, 0.98); 
+            border: 1px solid #444; border-radius: 15px;
+            display: flex; flex-direction: column; color: white; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); position: fixed; top: 25%; left: 10%; 
+        }
+
+        
+@keyframes super-disco {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.disco-active {
+   
+    background: linear-gradient(45deg, 
+        #ff0000, #ff7f00, #ffff00, #00ff00, 
+        #0000ff, #4b0082, #8b00ff, #ff0000
+    ) !important;
+    
+    
+    background-size: 600% 600% !important;
+    
+    
+    animation: super-disco 10s ease infinite !important;
+    
+   
+    filter: brightness(1.2) contrast(1.1);
+}
+
+        @keyframes rb-text {
+    0%   { color: #FF0000; fill: #FF0000; border-color: #FF0000; } 
+    10%  { color: #FF7F00; fill: #FF7F00; border-color: #FF7F00; } 
+    20%  { color: #FFFF00; fill: #FFFF00; border-color: #FFFF00; } 
+    30%  { color: #7FFF00; fill: #7FFF00; border-color: #7FFF00; } 
+    40%  { color: #00FF00; fill: #00FF00; border-color: #00FF00; } 
+    50%  { color: #00FF7F; fill: #00FF7F; border-color: #00FF7F; } 
+    60%  { color: #00FFFF; fill: #00FFFF; border-color: #00FFFF; } 
+    70%  { color: #007FFF; fill: #007FFF; border-color: #007FFF; } 
+    80%  { color: #8B00FF; fill: #8B00FF; border-color: #8B00FF; } 
+    90%  { color: #FF00FF; fill: #FF00FF; border-color: #FF00FF; } 
+    100% { color: #FF0000; fill: #FF0000; border-color: #FF0000; } 
+}
+
+        .rainbow-active span, .rainbow-active b, .rainbow-active div, 
+        .rainbow-active button, .rainbow-active input, .rainbow-active svg { 
+            animation: rb-text 3s linear infinite; 
+        }
+
+        .icon-svg { width: 20px; height: 20px; fill: white; cursor: pointer; transition: 0.2s; }
+        .icon-svg:hover { transform: scale(1.1); }
+
+        .header { padding: 8px 10px; font-weight: bold; border-bottom: 0.5px solid #3a3a3c; font-size: 13px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; z-index: 10; }
+        
+        #settings-panel, #fav-panel, #music-list-panel {
+            display: none; position: absolute; top: 38px; left: 0; width: 100%; height: calc(100% - 38px);
+            background: #1c1c1e; z-index: 100; padding: 10px; border-radius: 0 0 15px 15px; overflow-y: auto; 
+        }
+
+        .main-scroll { flex: 1; overflow-y: auto; padding: 0 10px; }
+        .type-selector { padding: 4px; background: #2c2c2e; margin: 4px 5px; border-radius: 8px; }
+        .type-scroll { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 4px;
+} 
+.type-btn { 
+    padding: 5px 0; 
+    border-radius: 6px; 
+    text-align: center; 
+    background: #3a3a3c; 
+    color: #8e8e93; 
+    font-size: 8px; 
+    border: none; 
+    font-weight: bold; 
+}
+        .type-btn.active { background: #0a84ff; color: white !important; }
+
+        input[type="text"] { width: 100%; height: 26px; background: #111; border: 1px solid #444; color: #00fbff; border-radius: 6px; margin: 4px 0; text-align: center; font-size: 12px; }
+        #result-count { font-size: 10px; color: #0a84ff; text-align: center; margin: 2px 0 5px 0; font-weight: bold; }
+        .btn-row { display: flex; gap: 2px; margin-bottom: 5px; } 
+        button { flex: 1; height: 26px; border: none; border-radius: 6px; font-weight: bold; color: white; font-size: 10px; }
+        .blue { background: #0a84ff; } .gray { background: #3a3a3c; } .orange { background: #ff9500; color: black !important; }
+
+        .item-list { background: #000; border-radius: 8px; border: 1px solid #333; margin-bottom: 10px; }
+        .item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #222; font-size: 11px; align-items: center; }
+        
+        .action-btns { display: flex; gap: 4px; margin-top: 5px; } 
+        .icon-btn { width: 45px; height: 35px; display: flex; justify-content: center; align-items: center; background: #2c2c2e; border: 1px solid #555; border-radius: 6px; }
+
+        .locked { background: #ff453a !important; } 
+        .faved { background: #ffcc00 !important; } 
+        .footer { padding: 4px; text-align: center; font-size: 8px; color: #555; border-top: 0.5px solid #333; }
+        .color-stepper { display: flex; align-items: center; gap: 10px; background: #2c2c2e; padding: 2px 8px; border-radius: 6px; }
+        .step-btn { width: 24px; height: 24px; background: #3a3a3c; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+#taichi-container {
+    display: none; 
+    position: absolute;
+    top: 55%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px; height: 200px;
+    opacity: 0.3; 
+    pointer-events: none; 
+    z-index: 1;
+}
+
+.taichi {
+    width: 100%; height: 100%; border-radius: 50%;
+    background: linear-gradient(to bottom, #fff 50%, #000 50%);
+    position: relative;
+    border: 1px solid #444;
+    animation: spinning var(--tc-speed, 5s) linear infinite !important;
+}
+
+.taichi::before, .taichi::after {
+    content: ''; position: absolute; width: 50%; height: 50%; left: 0; border-radius: 50%;
+}
+.taichi::before { 
+    top: 25%; background: #fff; 
+    background-image: radial-gradient(circle, #000 25%, transparent 25%); 
+}
+.taichi::after { 
+    top: 25%; left: 50%; background: #000; 
+    background-image: radial-gradient(circle, #fff 25%, transparent 25%); 
+}
+
+@keyframes spinning { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.ios-switch {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 24px;
+}
+
+.ios-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #3a3a3c;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider {
+    background-color: #32d74b; 
+}
+
+input:checked + .slider:before {
+    transform: translateX(18px);
+}
+.history-dropdown {
+    position: absolute;
+    width: 100%;
+    background: #1c1c1e;
+    border: 1px solid #444;
+    border-radius: 0 0 8px 8px;
+    max-height: 120px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.history-item {
+    padding: 8px 12px;
+    font-size: 11px;
+    color: #0a84ff;
+    border-bottom: 0.5px solid #333;
+    display: flex;
+    justify-content: space-between;
+}
+
+.history-item:active { background: #2c2c2e; }
+    </style>
+</head>
+<body id="body-root">
+
+<div id="app-container" style="display:none;">
+    <div id="main-menu">
+<canvas id="music-visualizer"></canvas>
+        <div class="header">
+<div id="taichi-container">
+    <div class="taichi"></div>
+</div>
+            <div class="header-icons" style="display:flex; gap:8px; align-items: center;">
+    <svg class="icon-svg" style="fill:gray" onclick="togglePanel('settings-panel')" viewBox="0 0 24 24"><path  d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84a.483.483 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.488.488 0 0 0-.59.22L3.02 8.87a.49.49 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.27.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.03-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+    
+    <svg class="icon-svg" style="fill:yellow" onclick="togglePanel('fav-panel')" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+
+    <svg class="icon-svg" style="fill:lightgray" onclick="togglePanel('music-menu-panel')" viewBox="0 0 24 24">
+        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+    </svg>
+</div>
+            <div class="header-title" style="color:#0f0; flex:1; text-align:right; margin-right:10%; font-size:13px">Memory Editer Pro</div>
+            <span onclick="resetAll()" style="color:red; font-size:18px; cursor:pointer">↻</span>
+        </div>
+        
+        <div id="settings-panel">
+            <div style="font-size:11px; margin-bottom:10px; color:#0a84ff; text-align:center; font-weight:bold">CÀI ĐẶT</div>
+            <div style="font-size:9px; color:#8e8e93">Vùng nhớ bắt đầu:</div>
+            <input type="text" id="setMemStart">
+            <div style="font-size:9px; color:#8e8e93">Vùng nhớ kết thúc:</div>
+            <input type="text" id="setMemEnd">
+            <div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+                <span>Tông màu nền</span>
+                <div class="color-stepper">
+                    <div class="step-btn" onclick="stepColor(-1)"><</div>
+                    <div id="colorName" style="font-size: 10px; min-width: 60px; text-align: center;">Mặc định</div>
+                    <div class="step-btn" onclick="stepColor(1)">></div>
+                </div>
+            </div>
+<div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+    <span>Tốc độ khóa (ms)</span>
+    <input type="number" id="lockSpeedInput" value="200" step="10" min="50" 
+           oninput="updateLockSpeed(this.value)"
+           style="width: 70px; height: 25px; background: #000; border: 1px solid #444; color: #ff453a; border-radius: 6px; text-align: center; font-size: 12px;">
+</div>
+<div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+    <span>Tự động lọc</span>
+    <label class="ios-switch">
+        <input type="checkbox" id="autoFilterToggle" onchange="toggleAutoFilter()">
+        <span class="slider"></span>
+    </label>
+</div>
+
+<div id="filter-speed-ctrl" style="margin: 12px 0; display:none; justify-content: space-between; align-items: center;">
+    <span style="font-size: 11px;">Giãn cách lọc (giây):</span>
+    <input type="number" id="filterSpeedInput" value="1.5" step="0.1" min="0.5" 
+           style="width: 70px; height: 25px; background: #000; border: 1px solid #444; color: #32d74b; border-radius: 6px; text-align: center; font-size: 12px;">
+</div>
+<div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+    <span>Rainbow Tất Cả</span>
+    <label class="ios-switch">
+        <input type="checkbox" id="rbToggle" onchange="applyRainbow()">
+        <span class="slider"></span>
+    </label>
+</div>
+
+<div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+    <span>Nền Rainbow Trượt</span>
+    <label class="ios-switch">
+        <input type="checkbox" id="discoToggle" onchange="applyDisco()">
+        <span class="slider"></span>
+    </label>
+</div>
+<div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+    <span>Sóng nhạc nền</span>
+    <label class="ios-switch">
+        <input type="checkbox" id="waveToggle" onchange="toggleWave()">
+        <span class="slider"></span>
+    </label>
+</div>
+<div id="waveWarning" style="font-size:11px; color: red; text-align:center; font-weight:bold">Lưu ý: Sóng nhạc có thể gây lag trên các thiết bị cấu hình yếu</div>
+<div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+    <span>Rainbow Viền Menu</span>
+    <label class="ios-switch">
+        <input type="checkbox" id="borderRbToggle" onchange="applyBorderRainbow()">
+        <span class="slider"></span>
+    </label>
+</div>
+
+<div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+    <span>Nền Thái Cực</span>
+    <label class="ios-switch">
+        <input type="checkbox" id="taichiToggle" onchange="applyTaiChi()">
+        <span class="slider"></span>
+    </label>
+</div>
+<div id="tc-speed-ctrl" style="margin: 12px 0; display:none; justify-content: space-between; align-items: center;">
+    <span style="font-size: 11px;">Tốc độ xoay (giây):</span>
+    <input type="number" id="tcSpeedInput" value="5" step="0.1" min="0.1" 
+           oninput="updateSpeed(this.value)" 
+           style="width: 70px; height: 25px; background: #000; border: 1px solid #444; color: #00fbff; border-radius: 6px; text-align: center; font-size: 12px;">
+</div>
+<div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+    <span>Tùy chỉnh kích cỡ Menu</span>
+    <label class="ios-switch">
+        <input type="checkbox" id="customSizeToggle" onchange="toggleSizeInputs()">
+        <span class="slider"></span>
+    </label>
+</div>
+
+<div id="size-inputs" style="display: none; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+    <div style="display:flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 11px;">Chiều rộng (px):</span>
+        <input type="number" id="menuWidth" value="300" min="100" max="500" oninput="updateMenuSize()"
+               style="width: 70px; height: 25px; background: #000; border: 1px solid #444; color: #fff; border-radius: 6px; text-align: center;">
+    </div>
+    <div style="display:flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 11px;">Chiều cao (px):</span>
+        <input type="number" id="menuHeight" value="300" min="100" max="500" oninput="updateMenuSize()"
+               style="width: 70px; height: 25px; background: #000; border: 1px solid #444; color: #fff; border-radius: 6px; text-align: center;">
+    </div>
+<div style="font-size:11px; color: red; text-align:center; font-weight:bold">Lưu ý: chạm 3 ngón vào màn hình 2 lần để reset kích thước menu</div>
+</div>
+<div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+    <span>Ghi nhớ tìm kiếm</span>
+    <label class="ios-switch">
+        <input type="checkbox" id="historyToggle" onchange="localStorage.setItem('h_enabled', this.checked)">
+        <span class="slider"></span>
+    </label>
+</div>
+<button class="gray" style="width:100%; height:25px; font-size:9px; margin-bottom:10px" onclick="clearH()">XÓA LỊCH SỬ TÌM KIẾM</button>
+            <button class="blue" style="width:100%; height:35px" onclick="saveSettings()">LƯU CÀI ĐẶT</button>
+        </div>
+
+        <div id="fav-panel">
+            <div style="font-size:11px; margin-bottom:10px; color:#ff9500; text-align:center; font-weight:bold">YÊU THÍCH</div>
+            <input type="text" id="fav_edit_val" placeholder="Giá trị mới...">
+            <div class="btn-row">
+                <button class="orange" onclick="editInFav()">SỬA CHỌN</button>
+                <button class="gray" onclick="togglePanel('fav-panel')">ĐÓNG</button>
+            </div>
+            <div id="fav-list-body" class="item-list"></div>
+        </div>
+<div id="music-menu-panel" style="display:none; position:absolute; top:38px; left:0; width:100%; height:calc(100% - 38px); background:rgba(28, 28, 30, 0.98); z-index:150; padding:10px; border-radius: 0 0 15px 15px; overflow-y: auto;">
+    <div style="font-size:11px; color:#bf00ff; text-align:center; margin-bottom:12px; font-weight:bold;">TÙY CHỌN NHẠC</div>
+    
+    <div class="item-list" style="background:#111; border: 1px solid #333;">
+        <div class="item" onclick="togglePanel('music-list-panel')">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <svg style="width:16px; height:16px; fill:#bf00ff;" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+                <span>Playlist hệ thống</span>
+            </div>
+            <span style="color:#555">➜</span>
+        </div>
+
+        <div class="item" onclick="document.getElementById('music-file').click()">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <svg style="width:16px; height:16px; fill:#32d74b;" viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+                <span>Chọn nhạc từ máy</span>
+            </div>
+        </div>
+        <div class="item" onclick="handleToggleMusic()" id="music-control-item">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <span id="music-svg-status">
+            <svg style="width:18px; height:18px; fill:#0a84ff;" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </span>
+        <span id="music-text-status">Phát nhạc</span>
+    </div>
+</div>
+</div>
+<div style="font-size:11px; color:#bf00ff; text-align:center; margin-bottom:12px; font-weight:bold;">KHÁC</div>
+<div class="item-list" style="background:#111; border: 1px solid #333;">
+<div class="item" onclick="document.getElementById('script-file').click()">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <svg style="width:16px; height:16px; fill:#ff9500;" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg>
+        <span>Chạy Script (.html/.js)</span>
+    </div>
+</div>
+</div>
+    <button class="gray" style="width:100%; margin-top:10px; height:30px" onclick="togglePanel('music-menu-panel')">ĐÓNG</button>
+</div>
+
+<div id="music-list-panel">
+    <div style="font-size:15px; margin-bottom:1px; color:#bf00ff; text-align:center; font-weight:bold">PLAYLIST NHẠC</div>
+    <div style="font-size:7px; color:#8e8e93; text-align:center; margin-bottom:10px; font-style: italic;">
+        Vui lòng đợi 5-30s để load nhạc
+    </div>
+    <div id="music-list-body"></div>
+    <button class="gray" style="width:100%; margin-top:10px;" onclick="togglePanel('music-list-panel')">ĐÓNG</button>
+</div>
+    
+<div id="nearby-panel" style="display:none; position:absolute; top:38px; left:0; width:100%; height:calc(100% - 38px); background:#1c1c1e; z-index:110; padding:10px; flex-direction: column; border-radius: 0 0 15px 15px;">
+    <div style="font-size:11px; margin-bottom:10px; color:#5ac8fa; text-align:center; font-weight:bold; flex-shrink:0;">BỘ NHỚ LÂN CẬN</div>
+    
+    <div style="display:flex; gap:5px; margin-bottom:10px; flex-shrink:0;">
+        <button onclick="navNearby(-25)" style="flex:1; height:30px; background:#444; font-size:10px; border-radius:5px; color:white; border:none;">LÙI 25 ĐỊA CHỈ</button>
+        <button onclick="navNearby(25)" style="flex:1; height:30px; background:#444; font-size:10px; border-radius:5px; color:white; border:none;">TIẾN 25 ĐỊA CHỈ</button>
+    </div>
+
+    <div id="nearby-list" class="item-list" style="overflow-y:auto; flex-grow:1;"></div>
+    
+    <button class="gray" style="width:100%; margin-top:10px; height:100%; flex-shrink:0;" onclick="document.getElementById('nearby-panel').style.display='none'">ĐÓNG</button>
+</div>
+
+        <div class="type-selector">
+            <div class="type-scroll">
+                <div class="type-btn active" onclick="setT('F64', this)">F64</div>
+                <div class="type-btn" onclick="setT('F32', this)">F32</div>
+                <div class="type-btn" onclick="setT('I64', this)">I64</div>
+                <div class="type-btn" onclick="setT('I32', this)">I32</div>
+                <div class="type-btn" onclick="setT('I16', this)">I16</div>
+                <div class="type-btn" onclick="setT('I8', this)">I8</div>
+            </div>
+        </div>
+
+        <div class="main-scroll">
+            <div style="position: relative; width: 100%;">
+    <input type="text" id="ipt" placeholder="Giá trị tìm..." 
+           onfocus="showH()" onblur="setTimeout(hideH, 200)">
+    <div id="history-list" class="history-dropdown"></div>
+</div>
+            <div class="btn-row">
+                <button class="blue" onclick="doSearch(false)">TÌM MỚI</button>
+                <button class="gray" onclick="doSearch(true)">LỌC</button>
+            </div>
+            <div id="result-count"></div>
+            <div id="edit-panel" style="display:none">
+                <input type="text" id="new_v" placeholder="Sửa giá trị...">
+                <div class="btn-row">
+                    <button class="blue" onclick="editAll()">SỬA HẾT</button>
+                    <button class="blue" onclick="editSelected()">SỬA DÒNG</button>
+                </div>
+            </div>
+            <div id="res-list" class="item-list"></div>
+        </div>
+<div class="footer">
+    Memory Editer Pro | <span id="clock"></span> | <span id="fps" ></span>
+</div>
+</div>
+</div>
+
+<input type="file" id="music-file" accept="audio/*" style="display:none">
+<input type="file" id="script-file" accept=".html,.js" style="display:none">
+<audio id="audio-player" loop></audio>
+
+<script>
+
+document.getElementById('script-file').onchange = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+const audio = document.getElementById("audio-player");
+    const fileName = file.name.toLowerCase();
+    
+    if (fileName.endsWith('.js')) {
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                eval(event.target.result); 
+                alert("Đã thực thi Script: " + file.name);
+            } catch (err) {
+                alert("Lỗi thực thi JS: " + err);
+            }
+        };
+        reader.readAsText(file);
+    } 
+    else if (fileName.endsWith('.html')) {
+        const fileURL = URL.createObjectURL(file);
+        
+        
+        window.location.href = fileURL;
+    }
+    
+    e.target.value = ''; 
+};
+
+const fpsEl = document.getElementById("fps");
+
+let lastTime = performance.now();
+let frames = 0;
+
+fpsEl.innerText = "60 FPS";
+
+function loop(now){
+    frames++;
+
+    if(now - lastTime >= 800){
+        let fps = Math.round((frames * 1000) / (now - lastTime));
+        fpsEl.innerText = fps + " FPS";
+
+        frames = 0;
+        lastTime = now;
+    }
+
+    requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(loop);
+function updateClock(){
+    const now = new Date().toLocaleString("en-US",{timeZone:"Asia/Ho_Chi_Minh"});
+    const t = new Date(now);
+
+    clock.innerText =
+        String(t.getHours()).padStart(2,"0")+":"+
+        String(t.getMinutes()).padStart(2,"0")+":"+
+        String(t.getSeconds()).padStart(2,"0");
+}
+
+
+updateClock();
+
+
+setInterval(updateClock,1000);
+function setWindowTouch(ignore) {
+    if (typeof h5gg !== 'undefined') {
+        h5gg.setWindowTouch(ignore);
+    }
+}
+function toggleMenuVisibility(isVisible) {
+    const menu = document.getElementById('main-menu');
+    const appContainer = document.getElementById('app-container');
+    
+    if (isVisible) {
+        menu.style.display = 'flex';
+        appContainer.style.display = 'flex';
+        setWindowTouch(true); 
+    } else {
+        menu.style.display = 'none';
+        appContainer.style.display = 'none';
+        setWindowTouch(false); 
+    }
+}
+function updateMusicUI(isPlaying) {
+    const svgStatus = document.getElementById('music-svg-status');
+    const textStatus = document.getElementById('music-text-status');
+    
+    const playSvg = `<svg style="width:18px; height:18px; fill:#0a84ff;" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+    const pauseSvg = `<svg style="width:18px; height:18px; fill:#ff453a;" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+
+    if (isPlaying) {
+        if(svgStatus) svgStatus.innerHTML = pauseSvg;
+        if(textStatus) textStatus.innerText = "Tạm dừng";
+    } else {
+        if(svgStatus) svgStatus.innerHTML = playSvg;
+        if(textStatus) textStatus.innerText = "Phát nhạc";
+    }
+}
+var lastTapTime = 0;
+
+var lockIntervalMs = parseInt(localStorage.getItem('savedLockMs')) || 200;
+document.addEventListener("touchstart", unlockAudio, { once: true });
+document.addEventListener("click", unlockAudio, { once: true });
+window.addEventListener('load', function() {
+    if(localStorage.getItem('memStart')) {
+        rangeStart = localStorage.getItem('memStart');
+        rangeEnd = localStorage.getItem('memEnd');
+        document.getElementById('setMemStart').value = rangeStart.replace('0x','');
+      
+document.getElementById('waveToggle').checked = localStorage.getItem('wave_enabled') === 'true';
+toggleWave();
+document.getElementById('setMemEnd').value = rangeEnd.replace('0x','');
+    }
+
+    if(localStorage.getItem('savedColorIdx')) {
+        currentColorIdx = parseInt(localStorage.getItem('savedColorIdx'));
+        document.getElementById('main-menu').style.backgroundColor = colorList[currentColorIdx].color;
+        document.getElementById('colorName').innerText = colorList[currentColorIdx].name;
+    }
+
+    document.getElementById('rbToggle').checked = localStorage.getItem('rb_enabled') === 'true';
+    applyRainbow(); 
+
+    document.getElementById('discoToggle').checked = localStorage.getItem('disco_enabled') === 'true';
+    if(document.getElementById('discoToggle').checked) applyDisco();
+
+    document.getElementById('taichiToggle').checked = localStorage.getItem('taichi_enabled') === 'true';
+    document.getElementById('tcSpeedInput').value = localStorage.getItem('tc_speed') || 5;
+    applyTaiChi();
+    updateSpeed(document.getElementById('tcSpeedInput').value);
+
+    document.getElementById('autoFilterToggle').checked = localStorage.getItem('autoFilter_enabled') === 'true';
+    document.getElementById('filterSpeedInput').value = localStorage.getItem('filter_speed') || 1.5;
+    if(document.getElementById('autoFilterToggle').checked) toggleAutoFilter();
+});
+function applyTaiChi() {
+    var container = document.getElementById('taichi-container');
+    var ctrl = document.getElementById('tc-speed-ctrl');
+    var isChecked = document.getElementById('taichiToggle').checked;
+    
+    if(container) container.style.display = isChecked ? 'block' : 'none';
+    if(ctrl) ctrl.style.display = isChecked ? 'flex' : 'none';
+
+}
+
+function updateSpeed(val) {
+    var taichi = document.querySelector('.taichi');
+    if (taichi) {
+        var speedVal = (val && val > 0) ? val : 5;
+        
+        taichi.style.setProperty('--tc-speed', speedVal + "s");
+        taichi.style.animationDuration = speedVal + "s";
+    }
+}
+    var audio = document.getElementById("audio-player");
+    var fileInput = document.getElementById("music-file");
+    var musicData = null;
+
+    var rangeStart = localStorage.getItem('memStart') || '0x100000000';
+    var rangeEnd = localStorage.getItem('memEnd') || '0x200000000';
+    var cur_t = 'F64', globalTimer = null, selectedAddr = null, selectedType = null;
+var lockIntervalMs = 200;
+    var lockList = {}, favList = {}; 
+
+    const svgLock = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>`;
+    const svgUnlock = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"/></svg>`;
+    const svgStar = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
+
+    var myPlaylist = [
+        { name: "Tinh Vệ", url: "https://file.garden/acqNoHMS1QleW-fL/Tinh%20Va%CC%81%C2%BB%C2%87%20(e%CC%80%C2%AD%C2%A6a%CC%8A%C2%8D%C2%AB)%20-%20Nha%CC%81%C2%BA%C2%A5t%20Kha%CC%81%C2%BB%C2%8Fa%20Lang%20Tinh%20(ba%CC%81%C2%BA%C2%A3n%20hA%CC%83%C2%AD)%20(create%20@trahoaam).mp3" },
+        { name: "VAPO NO SETOR", url: "https://files.catbox.moe/ccw4n4.mp3" },
+        { name: "BLAH!", url: "https://files.catbox.moe/5i8nil.mp3" },
+        { name: "NUNCA MUDA?", url: "https://files.catbox.moe/cdovkz.mp3" },
+        { name: "NO BATIDÃO", url: "https://files.catbox.moe/g6u1s9.mp3" },
+        { name: "MONTAGEM RABETA", url: "https://files.catbox.moe/6uvvu6.mp3" },
+        { name: "METAMORPHOSIS", url: "https://files.catbox.moe/ta4ikl.mp3" },
+        { name: "RAVE", url: "https://files.catbox.moe/agn6bu.mp3" },
+        { name: "GOZALO", url: "https://files.catbox.moe/9h8w4t.mp3" },
+        { name: "VOCE NA MIRA", url: "https://files.catbox.moe/yr56f7.mp3" },
+        { name: "BAILÃO", url: "https://file.garden/acqNoHMS1QleW-fL/MONTAGEM%20BAILA%CC%83%C2%83O.mp3" },
+        { name: "TALI", url: "https://files.catbox.moe/0wo63g.mp3" },
+        { name: "GLORY", url: "https://files.catbox.moe/p4mlpf.mp3" },
+        { name: "Funk de Beleza", url: "https://file.garden/acqNoHMS1QleW-fL/Funk%20de%20Beleza%20(Slowed).mp3" },
+        { name: "HEAVENLY JUMPSTYLE", url: "https://files.catbox.moe/kgqq7j.mp3" },
+        { name: "MONTAGEM HIKARI", url: "https://files.catbox.moe/3iejrs.mp3" },
+        { name: "PASSO BEM SOLTO", url: "https://file.garden/acqNoHMS1QleW-fL/ATLXS%20-%20PASSO%20BEM%20SOLTO%20(SLOWED).mp3" }
+
+
+    ];
+
+    var colorList = [
+        { name: "Mặc định", color: "rgba(28, 28, 30, 0.98)" },
+       { name: "Đen sâu", color: "#000000" },
+        { name: "Xanh tối", color: "#0a192f" },
+        { name: "Đỏ đô", color: "#2d0a0a" },
+        { name: "Tím ảo", color: "#1a0a2d" },
+        { name: "Xanh ánh", color: "#00bfff" },
+        { name: "Đỏ ánh", color: "#ff3b3b" },
+        { name: "Xanh lá ánh", color: "#00ff7f" },
+        { name: "Vàng ánh", color: "#ffd700" },
+        { name: "Tím ánh", color: "#bf00ff" },
+        { name: "Hồng ánh", color: "#ff69b4" },
+        { name: "Cam ánh", color: "#ff8c00" },
+        { name: "Cyan ánh", color: "#00ffff" },
+        { name: "Xanh ngọc ánh", color: "#40e0d0" },
+        { name: "Tím neon", color: "#9400ff" },
+        { name: "Đỏ neon", color: "#ff073a" },
+        { name: "Xanh neon", color: "#39ff14" },
+        { name: "Xanh dương neon", color: "#1f51ff" },
+        { name: "Vàng neon", color: "#fff700" },
+        { name: "Cam neon", color: "#ff5f1f" },
+        { name: "Hồng neon", color: "#ff1493" },
+        { name: "Tím neon đậm", color: "#8a2be2" },
+        { name: "Xanh lam sáng", color: "#0096ff" },
+        { name: "Xanh mint", color: "#98ff98" },
+        { name: "Xanh biển sáng", color: "#1ca9c9" },
+        { name: "Xanh băng", color: "#99ffff" },
+        { name: "Xanh da trời", color: "#87ceeb" },
+        { name: "Xanh sapphire", color: "#0f52ba" },
+        { name: "Xanh cobalt", color: "#0047ab" },
+        { name: "Tím lavender", color: "#e6e6fa" },
+        { name: "Tím orchid", color: "#da70d6" },
+        { name: "Hồng pastel", color: "#ffb6c1" },
+        { name: "Hồng đậm", color: "#ff007f" },
+        { name: "Đỏ ruby", color: "#e0115f" },
+        { name: "Đỏ crimson", color: "#dc143c" },
+        { name: "Cam san hô", color: "#ff7f50" },
+        { name: "Vàng chanh", color: "#fff44f" },
+        { name: "Vàng mật ong", color: "#ffb300" },
+        { name: "Xanh olive sáng", color: "#9acd32" },
+        { name: "Xanh lục bảo", color: "#50c878" },
+        { name: "Xanh jade", color: "#00a86b" },
+        { name: "Xanh teal", color: "#008080" },
+        { name: "Xanh aqua", color: "#00ffff" },
+        { name: "Xanh cyan đậm", color: "#008b8b" },
+        { name: "Xanh navy sáng", color: "#1a2aff" },
+        { name: "Tím điện", color: "#7f00ff" },
+        { name: "Tím galaxy", color: "#4b0082" },
+        { name: "Hồng neon sáng", color: "#ff10f0" },
+        { name: "Hồng candy", color: "#ff66cc" },
+        { name: "Cam neon sáng", color: "#ff4500" },
+        { name: "Vàng ánh kim", color: "#ffdf00" },
+        { name: "Bạc sáng", color: "#c0c0c0" },
+        { name: "Trắng sáng", color: "#ffffff" },
+        { name: "Xám sáng", color: "#d3d3d3" },
+        { name: "Đen ánh", color: "#111111" },
+        { name: "Xanh biển đậm", color: "#00008b" },
+        { name: "Xanh lam nhạt", color: "#add8e6" },
+        { name: "Xanh sky", color: "#87cefa" },
+        { name: "Xanh dodger", color: "#1e90ff" },
+        { name: "Xanh steel", color: "#4682b4" },
+        { name: "Xanh midnight", color: "#191970" },
+        { name: "Xanh royal", color: "#4169e1" },
+        { name: "Xanh cornflower", color: "#6495ed" },
+        { name: "Xanh powder", color: "#b0e0e6" },
+        { name: "Xanh cadet", color: "#5f9ea0" },
+        { name: "Xanh spring", color: "#00ff7f" },
+        { name: "Xanh forest", color: "#228b22" },
+        { name: "Xanh lime", color: "#32cd32" },
+        { name: "Xanh chartreuse", color: "#7fff00" },
+        { name: "Xanh dark green", color: "#006400" },
+        { name: "Xanh sea", color: "#2e8b57" },
+        { name: "Xanh pale green", color: "#98fb98" },
+        { name: "Xanh medium sea", color: "#3cb371" },
+        { name: "Xanh lawn", color: "#7cfc00" },
+        { name: "Xanh dark olive", color: "#556b2f" },
+        { name: "Vàng khaki", color: "#f0e68c" },
+        { name: "Vàng light yellow", color: "#ffffe0" },
+        { name: "Vàng moccasin", color: "#ffe4b5" },
+        { name: "Vàng peach", color: "#ffdab9" },
+        { name: "Vàng papaya", color: "#ffefd5" },
+        { name: "Vàng navajo", color: "#ffdead" },
+        { name: "Vàng blanched", color: "#ffebcd" },
+        { name: "Vàng lemon", color: "#fffacd" },
+        { name: "Vàng light gold", color: "#fafad2" },
+        { name: "Vàng wheat", color: "#f5deb3" },
+        { name: "Cam dark orange", color: "#ff8c00" },
+        { name: "Cam tomato", color: "#ff6347" },
+        { name: "Cam coral", color: "#ff7f50" },
+        { name: "Cam salmon", color: "#fa8072" },
+        { name: "Cam light salmon", color: "#ffa07a" },
+        { name: "Cam dark salmon", color: "#e9967a" },
+        { name: "Cam peru", color: "#cd853f" },
+        { name: "Cam chocolate", color: "#d2691e" },
+        { name: "Cam sienna", color: "#a0522d" },
+        { name: "Cam sandy", color: "#f4a460" },
+        { name: "Tím plum", color: "#dda0dd" },
+        { name: "Tím thistle", color: "#d8bfd8" },
+        { name: "Tím medium orchid", color: "#ba55d3" },
+        { name: "Tím dark orchid", color: "#9932cc" },
+        { name: "Tím medium purple", color: "#9370db" },
+        { name: "Tím slate blue", color: "#6a5acd" },
+        { name: "Tím dark violet", color: "#9400d3" },
+        { name: "Tím blue violet", color: "#8a2be2" },
+        { name: "Tím indigo", color: "#4b0082" },
+        { name: "Tím dark magenta", color: "#8b008b" }
+    ];
+    var currentColorIdx = 0;
+
+    function togglePanel(id) {
+    var p = document.getElementById(id);
+    var isVisible = (p.style.display === 'block');
+    
+    var panels = ['settings-panel', 'fav-panel', 'music-list-panel', 'music-menu-panel', 'nearby-panel'];
+    panels.forEach(pId => {
+        var el = document.getElementById(pId);
+        if(el) el.style.display = 'none';
+    });
+    
+    if(!isVisible) { 
+        p.style.display = 'block'; 
+        if(id === 'fav-panel') renderFavs();
+        if(id === 'music-list-panel') renderMusicList();
+    }
+}
+
+    function stepColor(dir) {
+        currentColorIdx = (currentColorIdx + dir + colorList.length) % colorList.length;
+        document.getElementById('colorName').innerText = colorList[currentColorIdx].name;
+        document.getElementById('main-menu').style.backgroundColor = colorList[currentColorIdx].color;
+    }
+
+    function applyRainbow() {
+        document.getElementById('main-menu').classList.toggle('rainbow-active', document.getElementById('rbToggle').checked);
+    }
+
+    function applyDisco() {
+    var isChecked = document.getElementById('discoToggle').checked; 
+    var menu = document.getElementById('main-menu');
+    
+    if(isChecked) {
+        menu.classList.add('disco-active');
+    } else {
+        menu.classList.remove('disco-active');
+        
+        menu.style.background = "rgba(28, 28, 30, 0.98)";
+        menu.style.filter = "none";
+    }
+}
+
+    function renderMusicList() {
+        var h = "";
+        myPlaylist.forEach((m, i) => {
+            var isActive = (audio.src === m.url);
+            h += `<div onclick="selectMusic(${i})" style="display:flex; justify-content:space-between; align-items:center; background:#2c2c2e; padding:10px; border-radius:8px; margin-bottom:5px; cursor:pointer;">
+ <div style="display:flex; align-items:center;">
+    <svg class="icon-svg music-item-icon" style="width:12px; height:12px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; color:#bf00ff; margin-right:5px;" viewBox="0 0 24 24">
+        <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/>
+        <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+    </svg>
+    <span style="font-size:11px; color:white;">${m.name}</span>
+</div>
+                <div style="width:10px; height:10px; border-radius:50%; background:${isActive ? '#32d74b' : '#444'}"></div>
+            </div>`;
+        });
+        document.getElementById('music-list-body').innerHTML = h || "<div style='text-align:center;padding:15px;color:#555;'>Trống</div>";
+    }
+
+    function selectMusic(i) {
+    var m = myPlaylist[i];
+    if(!m) return;
+    musicData = m.url; 
+    audio.src = musicData;
+    audio.play().then(() => {
+        updateMusicUI(true); 
+    });
+    renderMusicList(); 
+}
+function saveSettings() {
+    
+    let s = document.getElementById('setMemStart').value;
+    let e = document.getElementById('setMemEnd').value;
+    rangeStart = s.startsWith('0x') ? s : '0x' + s;
+    rangeEnd = e.startsWith('0x') ? e : '0x' + e;
+    localStorage.setItem('memStart', rangeStart);
+    localStorage.setItem('memEnd', rangeEnd);
+
+    localStorage.setItem('rb_enabled', document.getElementById('rbToggle').checked);
+    localStorage.setItem('disco_enabled', document.getElementById('discoToggle').checked);
+    localStorage.setItem('taichi_enabled', document.getElementById('taichiToggle').checked);
+    localStorage.setItem('autoFilter_enabled', document.getElementById('autoFilterToggle').checked);
+    localStorage.setItem('savedColorIdx', currentColorIdx);
+    localStorage.setItem('tc_speed', document.getElementById('tcSpeedInput').value);
+    localStorage.setItem('filter_speed', document.getElementById('filterSpeedInput').value); 
+
+localStorage.setItem('borderRb_enabled', document.getElementById('borderRbToggle').checked);
+    localStorage.setItem('savedLockMs', document.getElementById('lockSpeedInput').value); 
+    let saveBtn = document.querySelector('#settings-panel .blue');
+    let originalText = saveBtn.innerText;
+    
+    saveBtn.innerText = "ĐÃ LƯU CÀI ĐẶT  ✓";
+    saveBtn.style.backgroundColor = "#32d74b";
+    saveBtn.disabled = true; 
+    setTimeout(() => {
+        saveBtn.innerText = originalText;
+        saveBtn.style.backgroundColor = "#0a84ff";
+        saveBtn.disabled = false;
+        togglePanel('settings-panel');
+    }, 1000); 
+}
+
+    function setT(t, e) {
+        cur_t = t;
+        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+        e.classList.add('active');
+    }
+
+function createItem(addr, val, type, isL, isF) {
+    var displayAddr = "0x" + parseInt(addr).toString(16).toUpperCase();
+    return `<div class="item" onclick="selectRow('${addr}', '${val}', '${type}', this)">
+        <div>
+            <span style="font-size:8px; color:#5ac8fa; font-weight:bold">${type}</span>
+            <span style="color:#8e8e93; font-size:9px">${displayAddr.slice(-10)}</span>
+            <div class="action-btns">
+                <div class="icon-btn ${isL?'locked':''}" onclick="toggleLock('${addr}', '${val}', '${type}', event)">${isL?svgLock:svgUnlock}</div>
+                <div class="icon-btn ${isF?'faved':''}" onclick="toggleFav('${addr}', '${val}', '${type}', event)">${svgStar}</div>
+                <div class="icon-btn" style="background:#1a2aff" onclick="viewNearby('${addr}', '${type}', event)">
+                    <svg style="width:14px; height:14px; fill:white" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                </div>
+            </div>
+        </div>
+        <b style="color:#32d74b; font-size:13px">${val}</b>
+    </div>`;
+}
+
+    function render() {
+        var res = h5gg.getResults(30); var h = "";
+        document.getElementById('result-count').innerText = "Tìm thấy: " + h5gg.getResultsCount();
+        for(var i=0; i<res.length; i++) {
+            h += createItem(res[i].address, lockList[res[i].address] ? lockList[res[i].address].value : res[i].value, res[i].type, !!lockList[res[i].address], !!favList[res[i].address]);
+        }
+        document.getElementById('res-list').innerHTML = h;
+        document.getElementById('edit-panel').style.display = res.length > 0 ? 'block' : 'none';
+    }
+
+    function renderFavs() {
+        var h = "";
+        for(var a in favList) h += createItem(a, lockList[a] ? lockList[a].value : favList[a].value, favList[a].type, !!lockList[a], true);
+        document.getElementById('fav-list-body').innerHTML = h || "<div style='text-align:center;padding:15px;color:#555;'>Trống</div>";
+    }
+
+    function selectRow(addr, val, type, el) {
+        selectedAddr = addr; selectedType = type;
+        document.getElementById('new_v').value = val;
+        document.getElementById('fav_edit_val').value = val;
+        document.querySelectorAll('.item').forEach(i => i.style.background = 'none');
+        el.style.background = 'rgba(10, 132, 255, 0.2)';
+    }
+
+    function toggleLock(addr, val, type, event) {
+    event.stopPropagation();
+    if(lockList[addr]) {
+        delete lockList[addr];
+        if (Object.keys(lockList).length === 0) {
+            clearInterval(globalTimer);
+            globalTimer = null;
+        }
+    } else {
+        lockList[addr] = { value: val, type: type };
+        if(!globalTimer) {
+            startLockTimer();
+        }
+    }
+    render(); 
+    if(document.getElementById('fav-panel').style.display === 'block') renderFavs();
+}
+
+function startLockTimer() {
+    if(globalTimer) clearInterval(globalTimer);
+    globalTimer = setInterval(() => { 
+        for(var a in lockList) h5gg.setValue(a, lockList[a].value, lockList[a].type); 
+    }, lockIntervalMs);
+}
+
+function updateLockSpeed(val) {
+    lockIntervalMs = (val && val >= 50) ? parseInt(val) : 200;
+    
+    localStorage.setItem('savedLockMs', lockIntervalMs);
+    
+    if(globalTimer) {
+        startLockTimer();
+    }
+}
+
+    function toggleFav(addr, val, type, event) {
+        event.stopPropagation();
+        if(favList[addr]) delete favList[addr]; else favList[addr] = { value: val, type: type };
+        render(); if(document.getElementById('fav-panel').style.display === 'block') renderFavs();
+    }
+
+    function editInFav() {
+        var v = document.getElementById('fav_edit_val').value;
+        if(v && selectedAddr) { h5gg.setValue(selectedAddr, v, selectedType); renderFavs(); render(); }
+    }
+
+    function editSelected() {
+        var v = document.getElementById('new_v').value;
+        if(v && selectedAddr) { h5gg.setValue(selectedAddr, v, selectedType); render(); }
+    }
+
+    function editAll() {
+        var v = document.getElementById('new_v').value; if(v) h5gg.editAll(v, cur_t); render();
+    }
+
+    function resetAll() {
+        h5gg.clearResults();
+        document.getElementById('res-list').innerHTML = "";
+        document.getElementById('edit-panel').style.display = 'none';
+        document.getElementById('result-count').innerText = "";
+    }
+
+    window.onload = function() {
+        document.getElementById('setMemStart').value = rangeStart.replace('0x', '');
+        document.getElementById('setMemEnd').value = rangeEnd.replace('0x', '');
+    };
+
+    document.addEventListener("copy", e => e.preventDefault());
+    document.addEventListener("contextmenu", e => e.preventDefault());
+    document.body.style.webkitUserSelect = "none";
+var currentViewingAddr = ""; 
+var currentViewingType = "";
+
+function viewNearby(baseAddr, type, event) {
+    if(event) event.stopPropagation();
+    currentViewingAddr = baseAddr;
+    currentViewingType = type;
+    
+    let step = (type === 'F64' || type === 'I64') ? 8 : 4; 
+    let startAddr = BigInt(baseAddr) - BigInt(step * 25); 
+    let html = "";
+    
+    for(let i = 0; i < 100; i++) {
+        let currentAddrBig = startAddr + BigInt(i * step);
+        let currentAddrHex = "0x" + currentAddrBig.toString(16);
+        
+        let val = lockList[currentAddrHex] ? lockList[currentAddrHex].value : h5gg.getValue(currentAddrHex, type);
+        
+        let isL = !!lockList[currentAddrHex];
+        let isF = !!favList[currentAddrHex];
+        let isBase = (currentAddrHex.toLowerCase() === baseAddr.toLowerCase());
+        
+        let style = isBase ? "background:rgba(10, 132, 255, 0.2); border-left: 3px solid #0a84ff;" : "";
+        
+        html += `
+        <div class="item" style="${style} padding:8px;" onclick="selectRow('${currentAddrHex}', '${val}', '${type}', this)">
+            <div>
+                <span style="font-size:7px; color:#5ac8fa; font-weight:bold">${type}</span>
+                <span style="color:#8e8e93; font-size:9px">...${currentAddrHex.toUpperCase().slice(-8)}</span>
+                <div class="action-btns">
+                    <div class="icon-btn ${isL?'locked':''}" onclick="handleNearbyLock('${currentAddrHex}', '${val}', '${type}', event)">${isL?svgLock:svgUnlock}</div>
+                    <div class="icon-btn ${isF?'faved':''}" onclick="handleNearbyFav('${currentAddrHex}', '${val}', '${type}', event)">${svgStar}</div>
+                    <div class="icon-btn" style="background:#32d74b" onclick="quickEditNearby('${currentAddrHex}', '${type}', event)">
+                        <svg style="width:12px; height:12px; fill:white" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                    </div>
+                </div>
+            </div>
+            <b style="color:#32d74b; font-size:12px">${val}</b>
+        </div>`;
+    }
+    
+    document.getElementById('nearby-list').innerHTML = html;
+    document.getElementById('nearby-panel').style.display = 'flex'; 
+}
+
+function handleNearbyLock(addr, val, type, event) {
+    toggleLock(addr, val, type, event);
+    viewNearby(currentViewingAddr, currentViewingType); 
+}
+
+function handleNearbyFav(addr, val, type, event) {
+    toggleFav(addr, val, type, event);
+    viewNearby(currentViewingAddr, currentViewingType); 
+}
+
+function navNearby(offsetCount) {
+    let step = (currentViewingType === 'F64' || currentViewingType === 'I64') ? 8 : 4;
+    let newBase = BigInt(currentViewingAddr) + BigInt(step * offsetCount);
+    viewNearby("0x" + newBase.toString(16), currentViewingType);
+}
+
+function quickEditNearby(addr, type, event) {
+    event.stopPropagation();
+    let newVal = prompt("Sửa giá trị tại " + addr.toUpperCase().slice(-8) + ":");
+    if (newVal !== null && newVal !== "") {
+        h5gg.setValue(addr, newVal, type);
+        viewNearby(currentViewingAddr, currentViewingType);
+    }
+}
+var autoFilterTimer = null;
+
+function toggleAutoFilter() {
+    var isChecked = document.getElementById('autoFilterToggle').checked;
+    var speedCtrl = document.getElementById('filter-speed-ctrl');
+    
+    speedCtrl.style.display = isChecked ? 'flex' : 'none';
+
+    if (isChecked) {
+        startAutoFilter();
+    } else {
+        stopAutoFilter();
+    }
+}
+
+function startAutoFilter() {
+    stopAutoFilter(); 
+    
+    var interval = parseFloat(document.getElementById('filterSpeedInput').value) * 1000;
+    if (isNaN(interval) || interval < 500) interval = 1500; 
+
+    autoFilterTimer = setInterval(function() {
+        var v = document.getElementById('ipt').value;
+        if (v) {
+            h5gg.searchNumber(v, cur_t, rangeStart, rangeEnd);
+            render(); 
+        }
+    }, interval);
+}
+
+function stopAutoFilter() {
+    if (autoFilterTimer) {
+        clearInterval(autoFilterTimer);
+        autoFilterTimer = null;
+    }
+}
+
+document.getElementById('filterSpeedInput').oninput = function() {
+    if (document.getElementById('autoFilterToggle').checked) {
+        startAutoFilter();
+    }
+};
+function toggleSizeInputs() {
+    var isChecked = document.getElementById('customSizeToggle').checked;
+    document.getElementById('size-inputs').style.display = isChecked ? 'flex' : 'none';
+    
+    if (isChecked) {
+        localStorage.setItem('sizeEnabled', 'true');
+        updateMenuSize();
+    } else {
+        localStorage.setItem('sizeEnabled', 'false');
+        var menu = document.getElementById('main-menu');
+        menu.style.width = '300px';
+        menu.style.height = '300px';
+    }
+}
+
+function updateMenuSize() {
+    let w = document.getElementById('menuWidth').value;
+    let h = document.getElementById('menuHeight').value;
+
+    w = parseInt(w);
+    h = parseInt(h);
+
+    if (w > 500) {
+        w = 500;
+        document.getElementById('menuWidth').value = 500;
+    } else if (w < 100) {
+        w = 100;
+    }
+
+    if (h > 500) {
+        h = 500;
+        document.getElementById('menuHeight').value = 500;
+    } else if (h < 100) {
+        h = 100;
+    }
+
+    if (isNaN(w)) w = 300;
+    if (isNaN(h)) h = 300;
+
+    var menu = document.getElementById('main-menu');
+    menu.style.width = w + 'px';
+    menu.style.height = h + 'px';
+    
+    localStorage.setItem('savedW', w);
+    localStorage.setItem('savedH', h);
+}
+
+window.addEventListener('load', function() {
+    var isEnabled = localStorage.getItem('sizeEnabled') === 'true';
+    if (isEnabled) {
+        document.getElementById('customSizeToggle').checked = true;
+        document.getElementById('size-inputs').style.display = 'flex';
+        
+        var w = localStorage.getItem('savedW') || 300;
+        var h = localStorage.getItem('savedH') || 300;
+        
+        document.getElementById('menuWidth').value = w;
+        document.getElementById('menuHeight').value = h;
+        
+        var menu = document.getElementById('main-menu');
+        menu.style.width = w + 'px';
+        menu.style.height = h + 'px';
+    }
+});
+function showH() {
+    if (localStorage.getItem('h_enabled') !== 'true') return;
+    let history = JSON.parse(localStorage.getItem('h_data') || '[]');
+    if (history.length === 0) return;
+
+    let html = "";
+    history.forEach(val => {
+        html += `<div class="history-item" onclick="setH('${val}')">
+                    <span>${val}</span><span style="color:#555">➜</span>
+                 </div>`;
+    });
+    document.getElementById('history-list').innerHTML = html;
+    document.getElementById('history-list').style.display = 'block';
+}
+
+function hideH() { document.getElementById('history-list').style.display = 'none'; }
+
+function setH(val) {
+    document.getElementById('ipt').value = val;
+    doSearch(false);
+}
+
+function clearH() {
+    if(confirm("Xóa sạch lịch sử?")) {
+        localStorage.removeItem('h_data');
+        alert("Đã xóa!");
+    }
+}
+
+function saveH(val) {
+    if (localStorage.getItem('h_enabled') !== 'true' || !val) return;
+    let history = JSON.parse(localStorage.getItem('h_data') || '[]');
+    if (!history.includes(val)) {
+        history.unshift(val);
+        if (history.length > 10) history.pop();
+        localStorage.setItem('h_data', JSON.stringify(history));
+    }
+}
+
+function doSearch(isRefine) {
+    var v = document.getElementById('ipt').value; 
+    if(!v) return;
+    
+    saveH(v); 
+
+    if(!isRefine) h5gg.clearResults();
+    h5gg.searchNumber(v, cur_t, rangeStart, rangeEnd);
+    render();
+}
+
+window.addEventListener('load', function() {
+    document.getElementById('historyToggle').checked = localStorage.getItem('h_enabled') === 'true';
+});
+if (fileInput) {
+    fileInput.onchange = e => {
+        var file = e.target.files[0];
+        if (!file) return;
+        var r = new FileReader();
+        r.onload = x => {
+            musicData = x.target.result;
+            audio.src = musicData;
+            audio.play().then(() => {
+               
+                updateMusicUI(true); 
+            });
+        };
+        r.readAsDataURL(file);
+    };
+}
+
+function handleToggleMusic() {
+    if (audio.src || musicData) {
+        if (audio.paused) {
+            audio.play();
+            updateMusicUI(true);
+        } else {
+            audio.pause();
+            updateMusicUI(false);
+        }
+    } 
+}
+function showWarning(msg) {
+    const overlay = document.createElement('div');
+    Object.assign(overlay.style, {
+        position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
+        backgroundColor: 'rgba(0,0,0,0.85)', zIndex: '99999',
+        display: 'flex', justifyContent: 'center', alignItems: 'center',
+        backdropFilter: 'blur(5px)', color: 'white', fontFamily: 'sans-serif'
+    });
+
+    const box = document.createElement('div');
+    box.innerHTML = `
+        <div style="text-align:center; padding:20px; border:2px solid #ff453a; border-radius:15px; background:#1c1c1e; width:100%;">
+            <h2 style="color:#ff453a; margin-top:0;">⚠️ CẢNH BÁO</h2>
+            <p style="font-size:14px; line-height:1.5;">${msg}</p>
+            <button onclick="location.reload()" style="background:#ff453a; color:white; border:none; padding:6px 20px; border-radius:16px; font-weight:bold; margin-top:16px;">THỬ LẠI</button>
+        </div>
+    `;
+    
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+}
+window.addEventListener('load', function () {
+    if (typeof h5gg !== "undefined") {
+        document.getElementById('app-container').style.display = 'flex';
+        setTimeout(centerMenu, 100); 
+    } else {
+        showWarning("Phát hiện môi trường không hợp lệ!<br>Vui lòng chạy Script này bên trong ứng dụng <b>h5gg</b> để sử dụng.");
+    }
+});
+var dragTitle = document.querySelector('.header-title');
+var dragMenu = document.getElementById('main-menu');
+var menuWidth = 300; 
+var menuHeight = 300; 
+
+function centerMenu() {
+    var screenW = window.screen.width;
+    var screenH = window.screen.height;
+    
+    var actualW = (Math.abs(window.orientation) == 90) ? Math.max(screenW, screenH) : Math.min(screenW, screenH);
+    var actualH = (Math.abs(window.orientation) == 90) ? Math.min(screenW, screenH) : Math.max(screenW, screenH);
+
+    if (typeof h5gg !== "undefined") {
+        setWindowRect(0, 0, actualW, actualH);
+    }
+
+    dragMenu.style.position = 'absolute';
+    dragMenu.style.left = ((actualW - menuWidth) / 2) + 'px';
+    dragMenu.style.top = ((actualH - menuHeight) / 2) + 'px';
+    dragMenu.style.margin = '0';
+}
+
+window.addEventListener("orientationchange", function() {
+    setTimeout(centerMenu, 200); 
+}, false);
+
+var touchStartX = 0, touchStartY = 0, menuStartX = 0, menuStartY = 0, isDragging = false;
+
+dragTitle.addEventListener('touchstart', function(e) {
+    isDragging = true;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    var rect = dragMenu.getBoundingClientRect();
+    dragMenu.style.position = 'absolute';
+    dragMenu.style.left = rect.left + 'px';
+    dragMenu.style.top = rect.top + 'px';
+    dragMenu.style.margin = '0';
+    menuStartX = rect.left;
+    menuStartY = rect.top;
+}, {passive: false});
+
+dragTitle.addEventListener('touchmove', function(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    var diffX = e.touches[0].clientX - touchStartX;
+    var diffY = e.touches[0].clientY - touchStartY;
+    dragMenu.style.left = (menuStartX + diffX) + 'px';
+    dragMenu.style.top = (menuStartY + diffY) + 'px';
+}, {passive: false});
+
+dragTitle.addEventListener('touchend', function() {
+    isDragging = false;
+});
+document.querySelectorAll('input').forEach(function(input) {
+    input.addEventListener('focus', function(e) {
+    });
+});
+
+document.body.addEventListener('touchstart', function(e) {
+
+    if (e.touches.length === 3) {
+        var currentTime = new Date().getTime();
+        var tapLength = currentTime - lastTapTime;
+
+        if (tapLength < 300 && tapLength > 0) {
+            resetMenuPositionAndSize();
+            e.preventDefault(); 
+        }
+        lastTapTime = currentTime;
+    }
+}, { passive: false });
+
+function resetMenuPositionAndSize() {
+    menuWidth = 300;
+    menuHeight = 300;
+    
+    var menu = document.getElementById('main-menu');
+    menu.style.width = '300px';
+    menu.style.height = '300px';
+    
+    document.getElementById('menuWidth').value = 300;
+    document.getElementById('menuHeight').value = 300;
+    document.getElementById('customSizeToggle').checked = false;
+    document.getElementById('size-inputs').style.display = 'none';
+
+    localStorage.setItem('sizeEnabled', 'false');
+    localStorage.setItem('savedW', 300);
+    localStorage.setItem('savedH', 300);
+
+    centerMenu();
+}
+function applyBorderRainbow() {
+    var isChecked = document.getElementById('borderRbToggle').checked;
+    var menu = document.getElementById('main-menu');
+    
+    if(isChecked) {
+        menu.classList.add('border-rainbow-active');
+    } else {
+        menu.classList.remove('border-rainbow-active');
+        
+        menu.style.border = "1px solid #444";
+        menu.style.boxShadow = "0 10px 30px rgba(0,0,0,0.8)";
+    }
+}
+document.getElementById('borderRbToggle').checked = localStorage.getItem('borderRb_enabled') === 'true';
+applyBorderRainbow();
+let audioCtx, analyser, source, dataArray, canvas, ctx;
+let waveRunning = false;
+
+function initWave() {
+    if (audioCtx) return;
+
+    canvas = document.getElementById("music-visualizer");
+    let menu = document.getElementById("main-menu");
+
+    if (!canvas || !menu) return; 
+
+    ctx = canvas.getContext("2d");
+
+    resizeWaveCanvas();
+
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+
+    source = audioCtx.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+
+    analyser.fftSize = 256;
+
+    let bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+}
+function resizeWaveCanvas() {
+    let menu = document.getElementById("main-menu");
+    let canvasEl = document.getElementById("music-visualizer");
+
+    if (!menu || !canvasEl) return; 
+
+    canvasEl.width = menu.clientWidth;
+    canvasEl.height = menu.clientHeight;
+}
+
+window.addEventListener("resize", resizeWaveCanvas);
+function drawWave() {
+    if (!waveRunning) return;
+    requestAnimationFrame(drawWave);
+    analyser.getByteTimeDomainData(dataArray);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    
+    ctx.lineWidth = 3; 
+    ctx.lineCap = "round";
+
+    let useRainbow = document.getElementById("rbToggle")?.checked;
+    
+    if (useRainbow) {
+        let time = Date.now() / 500;
+        let color = `hsl(${time % 360}, 100%, 50%)`; 
+        
+        ctx.strokeStyle = color;
+        
+
+        ctx.shadowBlur = 15;        
+        ctx.shadowColor = color;    
+    } else {
+        ctx.strokeStyle = "#00ffff"; 
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "#00ffff";
+    }
+
+    ctx.beginPath();
+    let sliceWidth = canvas.width / dataArray.length;
+    let x = 0;
+
+    for (let i = 0; i < dataArray.length; i++) {
+        let v = dataArray[i] / 128.0;
+        let y = v * canvas.height / 2;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+        x += sliceWidth;
+    }
+
+    
+    ctx.stroke(); 
+    ctx.stroke(); 
+
+    
+    ctx.shadowBlur = 0;
+}
+function toggleWave() {
+    let isOn = document.getElementById("waveToggle").checked;
+    let canvasEl = document.getElementById("music-visualizer");
+    let warningEl = document.getElementById("waveWarning");
+
+    canvasEl.style.display = isOn ? "block" : "none";
+    warningEl.style.display = isOn ? "block" : "none"; 
+localStorage.setItem("wave_enabled", isOn);
+
+    if (isOn) {
+        setTimeout(() => {
+            initWave();
+
+            unlockAudio();
+
+            waveRunning = true;
+            drawWave();
+        }, 100);
+    } else {
+        waveRunning = false;
+    }
+}
+function unlockAudio() {
+    if (!audioCtx) return;
+
+    if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+    }
+}
+    // định mệnh bạn copy thì gay
+</script>
+</body>
+</html>
