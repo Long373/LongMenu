@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <style>
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: transparent; font-family: -apple-system, sans-serif; overflow: hidden; }
+        
+#app-container { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100vh; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    pointer-events: none; /* Thêm cái này để có thể chạm xuyên qua phần trống */
+}
+
+#main-menu {
+    pointer-events: auto; /* Để menu vẫn nhận cảm ứng */ 
+            width: 300px; height: 270px; /* KHÓA CỨNG 270 */
+            background: #1c1c1e; border: 2px solid #3a3a3c; border-radius: 20px;
+            display: flex; flex-direction: column; color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative; overflow: hidden;
+        }
+
+        /* --- RAINBOW SYSTEM --- */
+        @keyframes rb-text { 0% {color: #f00} 20% {color: #f90} 40% {color: #3d4} 60% {color: #08f} 80% {color: #b5f} 100% {color: #f00} }
+        .rb-text-active *:not(.no-rb) { animation: rb-text 2s linear infinite !important; }
+
+        @keyframes rb-border { 0% {border-color: #f00} 50% {border-color: #08f} 100% {border-color: #f00} }
+        .rb-border-active { animation: rb-border 2s linear infinite !important; }
+
+        @keyframes rb-bg { 0% {background: #200} 50% {background: #002} 100% {background: #200} }
+        .rb-bg-active { animation: rb-bg 4s linear infinite !important; }
+
+        .header { 
+            padding: 8px 12px; font-weight: bold; border-bottom: 0.5px solid #3a3a3c; 
+            font-size: 14px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+        }
+
+        #settings-panel {
+            display: none; background: rgba(20,20,20,0.98); position: absolute;
+            top: 40px; left: 10px; right: 10px; z-index: 100;
+            padding: 10px; border-radius: 12px; border: 1px solid #444;
+        }
+
+        /* THANH CHỌN KIỂU DỮ LIỆU */
+        .type-selector { padding: 4px; background: #2c2c2e; margin: 5px 10px; border-radius: 10px; flex-shrink: 0; }
+        .type-scroll { display: flex; gap: 4px; }
+        .type-btn { flex: 1; padding: 5px 0; border-radius: 6px; text-align: center; background: #3a3a3c; color: #8e8e93; font-size: 9px; border: none; font-weight: bold; }
+        .type-btn.active { background: #0a84ff; color: white !important; }
+
+        .main-content { flex: 1; overflow-y: auto; padding: 0 10px; display: flex; flex-direction: column; }
+
+        input[type="text"] { 
+            width: 100%; height: 32px; background: #2c2c2e; border: 1px solid #3a3a3c; color: #00fbff; 
+            border-radius: 8px; margin: 4px 0; text-align: center; font-size: 13px; font-weight: bold;
+        }
+
+        .btn-row { display: flex; gap: 5px; margin-bottom: 4px; flex-shrink: 0; }
+        button { flex: 1; height: 28px; border: none; border-radius: 8px; font-weight: bold; color: white; font-size: 10px; }
+        
+        .blue { background: #0a84ff; } .gray { background: #3a3a3c; } 
+        .green { background: #32d74b; color: #000 !important; }
+        .red { background: #ff453a; } .orange { background: #ff9500; color: #000 !important; }
+
+        #res-list { background: #000; border-radius: 8px; border: 1px solid #333; margin-top: 5px; display: none; }
+        .item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #222; font-size: 10px; align-items: center; }
+        .type-tag { background: #444; color: #fff !important; padding: 1px 4px; border-radius: 4px; font-size: 8px; margin-left: 5px; }
+        .selected { background: rgba(10, 132, 255, 0.4) !important; border-left: 4px solid #0a84ff; }
+
+        .status-box { text-align: center; font-size: 10px; padding: 4px; border-radius: 6px; margin: 4px 0; background: #2c2c2e; color: #8e8e93; font-weight: bold; }
+        .status-locked { background: #ff453a !important; color: white !important; }
+
+        .footer { padding: 5px 10px 8px 10px; border-top: 0.5px solid #3a3a3c; flex-shrink: 0; }
+        .reset-btn { height: 26px; font-size: 9px; color:#ff453a !important; width:100%; background: #2c2c2e; border: 1px solid #3a3a3c; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div id="main-menu">
+        <div class="header">
+            <span style="visibility: hidden;">⚙️</span>
+            <span id="title-text">Memory Editer Pro</span>
+            <span style="cursor:pointer" onclick="toggleSettings()">⚙️</span>
+        </div>
+        
+        <div id="settings-panel">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:12px">
+                <span>Hiện bảng kết quả</span><input type="checkbox" id="masterToggle" checked onchange="updateUI()">
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:12px"><span>Viền Rainbow</span><input type="checkbox" id="rbBorder" onchange="applyRB()"></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:12px"><span>Nền Rainbow</span><input type="checkbox" id="rbBg" onchange="applyRB()"></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:12px"><span>Chữ Rainbow</span><input type="checkbox" id="rbText" onchange="applyRB()"></div>
+            <button class="blue" onclick="toggleSettings()">ĐÓNG</button>
+        </div>
+
+        <div class="type-selector"><div class="type-scroll">
+            <div class="type-btn active" onclick="setT('F64', this)">Double</div>
+            <div class="type-btn" onclick="setT('F32', this)">Float</div>
+            <div class="type-btn" onclick="setT('I64', this)">Int64</div>
+            <div class="type-btn" onclick="setT('I32', this)">Int32</div>
+        </div></div>
+
+        <div class="main-content">
+            <input type="text" id="ipt" placeholder="Giá trị cần tìm...">
+            <div class="btn-row">
+                <button class="blue" onclick="doSearch(false)">TÌM MỚI</button>
+                <button class="gray" onclick="doSearch(true)">LỌC TIẾP</button>
+            </div>
+
+            <div id="edit-panel" style="display:none">
+                <input type="text" id="new_v" placeholder="Giá trị sửa...">
+                <div class="btn-row"><button class="orange" onclick="editSelected()">SỬA CHỌN</button><button class="green" onclick="editAll()">SỬA HẾT</button></div>
+                <div class="btn-row"><button class="red" onclick="lock()">KHÓA 🔒</button><button class="gray" onclick="unlock()">MỞ 🔓</button></div>
+            </div>
+
+            <div id="res-list"></div>
+            <div class="status-box no-rb" id="msg">Sẵn sàng</div>
+        </div>
+
+        <div class="footer">
+            <button class="reset-btn no-rb" onclick="resetAll()">🔄 RESET ENGINE</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Hàm điều chỉnh kích thước cửa sổ H5GG để luôn full màn hình
+function layout() {
+    // Kiểm tra hướng thiết bị
+    if (window.lastorientation == window.orientation) return;
+    window.lastorientation = window.orientation;
+
+    // Lấy kích thước màn hình thực tế
+    var screenW = window.screen.width;
+    var screenH = window.screen.height;
+
+    if (Math.abs(window.orientation) == 90) {
+        // Chế độ Ngang: Chiều rộng lúc này là Height của màn hình gốc
+        setWindowRect(0, 0, screenH, screenW);
+    } else {
+        // Chế độ Dọc
+        setWindowRect(0, 0, screenW, screenH);
+    }
+}
+
+// Gọi hàm layout ngay khi load trang
+layout();
+
+// Lắng nghe sự kiện xoay màn hình
+window.addEventListener("orientationchange", layout, false);
+
+// Thiết lập vùng kéo (nếu bạn muốn tiêu đề header có thể nắm kéo)
+// Ở đây ta set mặc định là không cho kéo toàn màn hình để tránh lỗi
+setWindowDrag(0, 0, 0, 0);
+const style = document.createElement('style');
+style.innerHTML = `
+    * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    input, textarea { -webkit-user-select: text; user-select: text; }
+`;
+document.head.appendChild(style);
+
+const isInput = (el) => ['INPUT', 'TEXTAREA'].includes(el.tagName) || el.isContentEditable;
+
+document.addEventListener('contextmenu', e => { if (!isInput(e.target)) e.preventDefault(); });
+document.addEventListener('selectstart', e => { if (!isInput(e.target)) e.preventDefault(); });
+document.addEventListener('copy', e => { if (!isInput(e.target)) e.preventDefault(); });
+
+document.onkeydown = e => {
+    if (isInput(e.target) && !e.ctrlKey) return true;
+    if (e.keyCode == 123 || 
+        (e.ctrlKey && e.shiftKey && [73, 74, 67].includes(e.keyCode)) || 
+        (e.ctrlKey && [85, 83, 67, 65].includes(e.keyCode))) {
+        return false;
+    }
+};
+    var cur_t = 'F64'; var timer = null; var selectedAddr = null;
+
+    function toggleSettings() {
+        var p = document.getElementById('settings-panel');
+        p.style.display = p.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function setT(t, e) {
+        cur_t = t;
+        var btns = document.getElementsByClassName('type-btn');
+        for(var i=0; i<btns.length; i++) btns[i].classList.remove('active');
+        e.classList.add('active');
+    }
+
+    function updateUI() {
+        var isShow = document.getElementById('masterToggle').checked;
+        var list = document.getElementById('res-list');
+        if(h5gg.getResultsCount() > 0) {
+            list.style.display = isShow ? 'block' : 'none';
+        }
+    }
+
+    function applyRB() {
+        var m = document.getElementById('main-menu');
+        document.getElementById('rbBorder').checked ? m.classList.add('rb-border-active') : m.classList.remove('rb-border-active');
+        document.getElementById('rbBg').checked ? m.classList.add('rb-bg-active') : m.classList.remove('rb-bg-active');
+        document.getElementById('rbText').checked ? m.classList.add('rb-text-active') : m.classList.remove('rb-text-active');
+    }
+
+    function doSearch(isRefine) {
+        var v = document.getElementById('ipt').value; if(!v) return;
+        if(!isRefine) h5gg.clearResults();
+        h5gg.searchNumber(v, cur_t, '0x0', '0x200000000');
+        var c = h5gg.getResultsCount();
+        document.getElementById('msg').innerText = "Tìm thấy: " + c;
+        if(c > 0) { document.getElementById('edit-panel').style.display = 'block'; render(); }
+    }
+
+    function render() {
+        var c = h5gg.getResultsCount();
+        var res = h5gg.getResults(c > 20 ? 20 : c);
+        var h = "";
+        for(var i=0; i<res.length; i++) {
+            h += "<div class='item' onclick='selectRow(\""+res[i].address+"\", \""+res[i].value+"\", this)'>" +
+                 "<div><span style='color:#8e8e93'>0x"+res[i].address.toString(16).toUpperCase().slice(-8)+"</span>" +
+                 "<span class='type-tag no-rb'>"+res[i].type+"</span></div>" +
+                 "<b style='color:#32d74b'>"+res[i].value+"</b></div>";
+        }
+        document.getElementById('res-list').innerHTML = h;
+        updateUI();
+    }
+
+    function selectRow(addr, val, el) {
+        selectedAddr = addr;
+        document.getElementById('new_v').value = val;
+        var items = document.getElementsByClassName('item');
+        for(var i=0; i<items.length; i++) items[i].classList.remove('selected');
+        el.classList.add('selected');
+    }
+
+    function editSelected() {
+        var v = document.getElementById('new_v').value;
+        if(v && selectedAddr) { h5gg.setValue(selectedAddr, v, cur_t); render(); }
+    }
+
+    function editAll() {
+        var v = document.getElementById('new_v').value; if(!v) return;
+        var c = h5gg.getResultsCount();
+        var res = h5gg.getResults(c);
+        for(var i=0; i<c; i++) h5gg.setValue(res[i].address, v, res[i].type);
+        render(); 
+    }
+
+    function lock() {
+        var v = document.getElementById('new_v').value; if(!v) return;
+        unlock();
+        var c = h5gg.getResultsCount();
+        var res = h5gg.getResults(c);
+        timer = setInterval(function() {
+            for(var i=0; i<c; i++) h5gg.setValue(res[i].address, v, res[i].type);
+        }, 300);
+        document.getElementById('msg').innerText = "🔒 ĐANG KHÓA: " + v;
+        document.getElementById('msg').classList.add('status-locked');
+    }
+
+    function unlock() {
+        if(timer) clearInterval(timer);
+        document.getElementById('msg').innerText = "🔓 ĐÃ MỞ KHÓA";
+        document.getElementById('msg').classList.remove('status-locked');
+    }
+
+    function resetAll() {
+        unlock(); h5gg.clearResults(); selectedAddr = null;
+        document.getElementById('edit-panel').style.display = 'none';
+        document.getElementById('res-list').style.display = 'none';
+        document.getElementById('msg').innerText = "Sẵn sàng";
+        document.getElementById('msg').classList.remove('status-locked');
+    }
+</script>
+</body>
+</html>
