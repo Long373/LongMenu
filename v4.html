@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <style>
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: transparent; font-family: -apple-system, sans-serif; overflow: hidden; }
+        #app-container { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100vh; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    pointer-events: none; /* Thêm cái này để có thể chạm xuyên qua phần trống */
+}
+
+#main-menu {
+    pointer-events: auto;
+            width: 300px; height: 300px; background: rgba(28, 28, 30, 0.98); 
+            border: 1px solid #444; border-radius: 15px;
+            display: flex; flex-direction: column; color: white; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); position: relative; overflow: hidden; 
+        }
+
+        @keyframes rb-text { 
+            0% {color: #ff0000} 20% {color: #ff9900} 40% {color: #33dd44} 
+            60% {color: #0088ff} 80% {color: #bb55ff} 100% {color: #ff0000} 
+        }
+        .rainbow-active *:not(input):not(button) { animation: rb-text 2s linear infinite !important; }
+
+        .header { padding: 8px 10px; font-weight: bold; border-bottom: 0.5px solid #3a3a3c; font-size: 13px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        
+        #settings-panel, #fav-panel {
+            display: none; position: absolute; top: 38px; left: 0; width: 100%; height: calc(100% - 38px);
+            background: #1c1c1e; z-index: 100; padding: 10px; border-radius: 0 0 15px 15px; overflow-y: auto; 
+        }
+
+        .main-scroll { flex: 1; overflow-y: auto; padding: 0 10px; -webkit-overflow-scrolling: touch; }
+        .type-selector { padding: 4px; background: #2c2c2e; margin: 4px 5px; border-radius: 8px; flex-shrink: 0; }
+        .type-scroll { display: flex; gap: 3px; }
+        .type-btn { flex: 1; padding: 5px 0; border-radius: 6px; text-align: center; background: #3a3a3c; color: #8e8e93; font-size: 9px; border: none; font-weight: bold; }
+        .type-btn.active { background: #0a84ff; color: white !important; }
+
+        input[type="text"] { width: 100%; height: 26px; background: #111; border: 1px solid #444; color: #00fbff; border-radius: 6px; margin: 4px 0; text-align: center; font-size: 12px; }
+        #result-count { font-size: 10px; color: #0a84ff; text-align: center; margin: 2px 0 5px 0; font-weight: bold; }
+        .btn-row { display: flex; gap: 4px; margin-bottom: 5px; }
+        button { flex: 1; height: 26px; border: none; border-radius: 6px; font-weight: bold; color: white; font-size: 10px; cursor: pointer; }
+        .blue { background: #0a84ff; } .gray { background: #3a3a3c; } .orange { background: #ff9500; color: black !important; }
+
+        .item-list { background: #000; border-radius: 8px; border: 1px solid #333; margin-bottom: 10px; }
+        .item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #222; font-size: 11px; align-items: center; }
+        .selected { background: rgba(10, 132, 255, 0.2) !important; }
+        
+        .action-btns { display: flex; gap: 8px; margin-top: 5px; }
+        .icon-btn { width: 45px; height: 35px; display: flex; justify-content: center; align-items: center; background: #2c2c2e; border: 1px solid #555; border-radius: 6px; font-size: 20px; }
+        .locked { background: rgba(255, 69, 58, 0.2) !important; border-color: #ff453a !important; color: #ff453a !important; }
+        .faved { background: rgba(255, 149, 0, 0.2) !important; border-color: #ff9500 !important; color: #ff9500 !important; }
+        .footer { padding: 4px; text-align: center; font-size: 8px; color: #555; border-top: 0.5px solid #333; flex-shrink: 0; }
+    </style>
+</head>
+<body id="body-root">
+
+<div id="app-container">
+    <div id="main-menu">
+        <div class="header">
+            <div class="header-icons" style="display:flex; gap:15px">
+                <span onclick="togglePanel('settings-panel')" style="font-size:18px">⚙️</span>
+                <span onclick="togglePanel('fav-panel')" style="font-size:18px">⭐</span>
+            </div>
+            <span>Memory Editer Pro</span>
+            <span onclick="resetAll()" style="color:#ff453a; font-size:18px">↻</span>
+        </div>
+        
+        <div id="settings-panel">
+            <div style="font-size:11px; margin-bottom:10px; color:#0a84ff; text-align:center; font-weight:bold">CÀI ĐẶT VÙNG NHỚ</div>
+            <div style="font-size:9px; color:#8e8e93">Bắt đầu:</div>
+            <input type="text" id="setMemStart" value="100000000">
+            <div style="font-size:9px; color:#8e8e93">Kết thúc:</div>
+            <input type="text" id="setMemEnd" value="200000000">
+            
+            <div style="margin: 15px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+                <span>Rainbow Chữ</span>
+                <input type="checkbox" id="rbToggle" onchange="applyRainbow()" style="width:22px; height:22px">
+            </div>
+            <button id="btn-save" class="blue" style="width:100%; height:35px" onclick="saveSettings()">LƯU CÀI ĐẶT</button>
+        </div>
+
+        <div id="fav-panel">
+            <div style="font-size:11px; margin-bottom:10px; color:#ff9500; text-align:center; font-weight:bold">DANH SÁCH YÊU THÍCH</div>
+            <input type="text" id="fav_edit_val" placeholder="Giá trị mới...">
+            <div class="btn-row">
+                <button class="orange" onclick="editInFav()">SỬA CHỌN</button>
+                <button class="gray" onclick="togglePanel('fav-panel')">ĐÓNG</button>
+            </div>
+            <div id="fav-list-body" class="item-list"></div>
+        </div>
+
+        <div class="type-selector">
+            <div class="type-scroll">
+                <div class="type-btn active" onclick="setT('F64', this)">F64</div>
+                <div class="type-btn" onclick="setT('F32', this)">F32</div>
+                <div class="type-btn" onclick="setT('I64', this)">I64</div>
+                <div class="type-btn" onclick="setT('I32', this)">I32</div>
+            </div>
+        </div>
+
+        <div class="main-scroll">
+            <input type="text" id="ipt" placeholder="Giá trị tìm...">
+            <div class="btn-row">
+                <button class="blue" onclick="doSearch(false)">TÌM MỚI</button>
+                <button class="gray" onclick="doSearch(true)">LỌC</button>
+            </div>
+            <div id="result-count"></div>
+            <div id="edit-panel" style="display:none">
+                <input type="text" id="new_v" placeholder="Sửa giá trị...">
+                <div class="btn-row">
+                    <button class="blue" onclick="editAll()">SỬA HẾT</button>
+                    <button class="blue" onclick="editSelected()">SỬA DÒNG</button>
+                </div>
+            </div>
+            <div id="res-list" class="item-list"></div>
+        </div>
+        <div class="footer">Memory Editer Pro | Cre : Long Đẹp Trai😎</div>
+    </div>
+</div>
+
+<script>
+// Hàm điều chỉnh kích thước cửa sổ H5GG để luôn full màn hình
+function layout() {
+    // Kiểm tra hướng thiết bị
+    if (window.lastorientation == window.orientation) return;
+    window.lastorientation = window.orientation;
+
+    // Lấy kích thước màn hình thực tế
+    var screenW = window.screen.width;
+    var screenH = window.screen.height;
+
+    if (Math.abs(window.orientation) == 90) {
+        // Chế độ Ngang: Chiều rộng lúc này là Height của màn hình gốc
+        setWindowRect(0, 0, screenH, screenW);
+    } else {
+        // Chế độ Dọc
+        setWindowRect(0, 0, screenW, screenH);
+    }
+}
+
+// Gọi hàm layout ngay khi load trang
+layout();
+
+// Lắng nghe sự kiện xoay màn hình
+window.addEventListener("orientationchange", layout, false);
+
+// Thiết lập vùng kéo (nếu bạn muốn tiêu đề header có thể nắm kéo)
+// Ở đây ta set mặc định là không cho kéo toàn màn hình để tránh lỗi
+setWindowDrag(0, 0, 0, 0);
+    const style = document.createElement('style');
+style.innerHTML = `
+    * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    input, textarea { -webkit-user-select: text; user-select: text; }
+`;
+document.head.appendChild(style);
+
+const isInput = (el) => ['INPUT', 'TEXTAREA'].includes(el.tagName) || el.isContentEditable;
+
+document.addEventListener('contextmenu', e => { if (!isInput(e.target)) e.preventDefault(); });
+document.addEventListener('selectstart', e => { if (!isInput(e.target)) e.preventDefault(); });
+document.addEventListener('copy', e => { if (!isInput(e.target)) e.preventDefault(); });
+
+document.onkeydown = e => {
+    if (isInput(e.target) && !e.ctrlKey) return true;
+    if (e.keyCode == 123 || 
+        (e.ctrlKey && e.shiftKey && [73, 74, 67].includes(e.keyCode)) || 
+        (e.ctrlKey && [85, 83, 67, 65].includes(e.keyCode))) {
+        return false;
+    }
+};
+    var rangeStart = '0x100000000', rangeEnd = '0x200000000';
+    var cur_t = 'F64', globalTimer = null, selectedAddr = null, selectedType = null;
+    var lockList = {}, favList = {}; 
+
+    function applyRainbow() {
+        var isChecked = document.getElementById('rbToggle').checked;
+        document.getElementById('body-root').classList.toggle('rainbow-active', isChecked);
+    }
+
+    function togglePanel(id) {
+        var p = document.getElementById(id);
+        var isVisible = (p.style.display === 'block');
+        document.getElementById('settings-panel').style.display = 'none';
+        document.getElementById('fav-panel').style.display = 'none';
+        if(!isVisible) {
+            p.style.display = 'block';
+            if(id === 'fav-panel') renderFavs();
+        }
+    }
+
+    function saveSettings() {
+        let s = document.getElementById('setMemStart').value.trim();
+        let e = document.getElementById('setMemEnd').value.trim();
+        rangeStart = s.startsWith('0x') ? s : '0x' + s;
+        rangeEnd = e.startsWith('0x') ? e : '0x' + e;
+
+        var btn = document.getElementById('btn-save');
+        btn.innerText = "ĐÃ LƯU ✅";
+        setTimeout(() => {
+            btn.innerText = "LƯU CÀI ĐẶT";
+            togglePanel('settings-panel');
+        }, 600);
+    }
+
+    function doSearch(isRefine) {
+        var v = document.getElementById('ipt').value; if(!v) return;
+        if(!isRefine) h5gg.clearResults();
+        
+        // Luôn dùng rangeStart và rangeEnd (đã có sẵn giá trị mặc định)
+        h5gg.searchNumber(v, cur_t, rangeStart, rangeEnd);
+        render();
+    }
+
+    // --- Các hàm render và xử lý khác giữ nguyên để đảm bảo ổn định ---
+    function setT(t, e) {
+        cur_t = t;
+        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+        e.classList.add('active');
+    }
+
+    function createItem(addr, val, type, isL, isF) {
+        var displayAddr = "0x" + addr.toString(16).toUpperCase();
+        return `<div class="item ${selectedAddr==addr?'selected':''}" onclick="selectRow('${addr}', '${val}', '${type}', this)">
+            <div>
+                <span style="font-size:8px; color:#5ac8fa; font-weight:bold">${type}</span>
+                <span style="color:#8e8e93; font-size:9px">${displayAddr.slice(-10)}</span>
+                <div class="action-btns">
+                    <div class="icon-btn ${isL?'locked':''}" onclick="toggleLock('${addr}', '${val}', '${type}', event)">${isL?'🔒':'🔓'}</div>
+                    <div class="icon-btn ${isF?'faved':''}" onclick="toggleFav('${addr}', '${val}', '${type}', event)">⭐</div>
+                </div>
+            </div>
+            <b style="color:#32d74b; font-size:13px">${val}</b>
+        </div>`;
+    }
+
+    function render() {
+        var count = h5gg.getResultsCount();
+        document.getElementById('result-count').innerText = "Tìm thấy: " + count;
+        var res = h5gg.getResults(30); var h = "";
+        for(var i=0; i<res.length; i++) {
+            h += createItem(res[i].address, lockList[res[i].address] ? lockList[res[i].address].value : res[i].value, res[i].type, !!lockList[res[i].address], !!favList[res[i].address]);
+        }
+        document.getElementById('res-list').innerHTML = h;
+        document.getElementById('edit-panel').style.display = res.length > 0 ? 'block' : 'none';
+    }
+
+    function renderFavs() {
+        var h = "";
+        for(var a in favList) h += createItem(a, lockList[a] ? lockList[a].value : favList[a].value, favList[a].type, !!lockList[a], true);
+        document.getElementById('fav-list-body').innerHTML = h || "<div style='text-align:center;padding:15px;color:#555;'>Trống</div>";
+    }
+
+    function selectRow(addr, val, type, el) {
+        selectedAddr = addr; selectedType = type;
+        document.getElementById('new_v').value = val;
+        document.getElementById('fav_edit_val').value = val;
+        document.querySelectorAll('.item').forEach(i => i.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    function toggleLock(addr, val, type, event) {
+        event.stopPropagation();
+        if(lockList[addr]) delete lockList[addr];
+        else {
+            lockList[addr] = { value: val, type: type };
+            if(!globalTimer) globalTimer = setInterval(() => { for(var a in lockList) h5gg.setValue(a, lockList[a].value, lockList[a].type); }, 200);
+        }
+        render(); if(document.getElementById('fav-panel').style.display === 'block') renderFavs();
+    }
+
+    function toggleFav(addr, val, type, event) {
+        event.stopPropagation();
+        if(favList[addr]) delete favList[addr];
+        else favList[addr] = { value: val, type: type };
+        render(); if(document.getElementById('fav-panel').style.display === 'block') renderFavs();
+    }
+
+    function editInFav() {
+        var v = document.getElementById('fav_edit_val').value;
+        if(v && selectedAddr && favList[selectedAddr]) {
+            h5gg.setValue(selectedAddr, v, selectedType);
+            favList[selectedAddr].value = v;
+            if(lockList[selectedAddr]) lockList[selectedAddr].value = v;
+            renderFavs(); render();
+        }
+    }
+
+    function editSelected() {
+        var v = document.getElementById('new_v').value;
+        if(v && selectedAddr) {
+            h5gg.setValue(selectedAddr, v, selectedType);
+            if(lockList[selectedAddr]) lockList[selectedAddr].value = v;
+            if(favList[selectedAddr]) favList[selectedAddr].value = v;
+            render();
+        }
+    }
+
+    function editAll() {
+        var v = document.getElementById('new_v').value; if(v) h5gg.editAll(v, cur_t); render();
+    }
+
+    function resetAll() {
+        h5gg.clearResults();
+        let nl = {}; for(let a in lockList) if(favList[a]) nl[a] = lockList[a]; lockList = nl;
+        document.getElementById('res-list').innerHTML = "";
+        document.getElementById('edit-panel').style.display = 'none';
+        document.getElementById('result-count').innerText = "";
+        document.getElementById('ipt').value = "";
+    }
+</script>
+</body>
+</html>
