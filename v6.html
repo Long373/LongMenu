@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <style>
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: transparent; font-family: -apple-system, sans-serif; overflow: hidden; }
+               #app-container { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100vh; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    pointer-events: none; /* Thêm cái này để có thể chạm xuyên qua phần trống */
+}
+
+#main-menu {
+pointer-events: auto;
+            width: 300px; height: 300px; background: rgba(28, 28, 30, 0.98); 
+            border: 1px solid #444; border-radius: 15px;
+            display: flex; flex-direction: column; color: white; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); position: relative; overflow: hidden; 
+        }
+
+        /* Hiệu ứng Rainbow */
+        @keyframes rainbow-bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .disco-active {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab) !important;
+            background-size: 400% 400% !important;
+            animation: rainbow-bg 12s linear infinite !important;
+        }
+
+        @keyframes rb-text { 
+            0% {color: #ff0000; fill: #ff0000;} 20% {color: #ff9900; fill: #ff9900;} 40% {color: #33dd44; fill: #33dd44;} 
+            60% {color: #0088ff; fill: #0088ff;} 80% {color: #bb55ff; fill: #bb55ff;} 100% {color: #ff0000; fill: #ff0000;} 
+        }
+
+        .rainbow-active span, .rainbow-active b, .rainbow-active div, 
+        .rainbow-active button, .rainbow-active input, .rainbow-active svg { 
+            animation: rb-text 2s linear infinite; 
+        }
+
+        .icon-svg { width: 20px; height: 20px; fill: white; cursor: pointer; transition: 0.2s; }
+        .icon-svg:hover { transform: scale(1.1); }
+
+        .header { padding: 8px 10px; font-weight: bold; border-bottom: 0.5px solid #3a3a3c; font-size: 13px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; z-index: 10; }
+        
+        /* Các bảng điều khiển */
+        #settings-panel, #fav-panel, #music-list-panel {
+            display: none; position: absolute; top: 38px; left: 0; width: 100%; height: calc(100% - 38px);
+            background: #1c1c1e; z-index: 100; padding: 10px; border-radius: 0 0 15px 15px; overflow-y: auto; 
+        }
+
+        .main-scroll { flex: 1; overflow-y: auto; padding: 0 10px; }
+        .type-selector { padding: 4px; background: #2c2c2e; margin: 4px 5px; border-radius: 8px; }
+        .type-scroll { display: flex; gap: 1px; } /* Đã chỉnh sát lại theo yêu cầu */
+        .type-btn { flex: 1; padding: 5px 0; border-radius: 6px; text-align: center; background: #3a3a3c; color: #8e8e93; font-size: 9px; border: none; font-weight: bold; }
+        .type-btn.active { background: #0a84ff; color: white !important; }
+
+        input[type="text"] { width: 100%; height: 26px; background: #111; border: 1px solid #444; color: #00fbff; border-radius: 6px; margin: 4px 0; text-align: center; font-size: 12px; }
+        #result-count { font-size: 10px; color: #0a84ff; text-align: center; margin: 2px 0 5px 0; font-weight: bold; }
+        .btn-row { display: flex; gap: 2px; margin-bottom: 5px; } /* Đã chỉnh sát lại */
+        button { flex: 1; height: 26px; border: none; border-radius: 6px; font-weight: bold; color: white; font-size: 10px; }
+        .blue { background: #0a84ff; } .gray { background: #3a3a3c; } .orange { background: #ff9500; color: black !important; }
+
+        .item-list { background: #000; border-radius: 8px; border: 1px solid #333; margin-bottom: 10px; }
+        .item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #222; font-size: 11px; align-items: center; }
+        
+        .action-btns { display: flex; gap: 4px; margin-top: 5px; } /* Đã chỉnh sát lại */
+        .icon-btn { width: 45px; height: 35px; display: flex; justify-content: center; align-items: center; background: #2c2c2e; border: 1px solid #555; border-radius: 6px; }
+
+        .locked { background: #ff453a !important; } 
+        .faved { background: #ffcc00 !important; } 
+        
+        .footer { padding: 4px; text-align: center; font-size: 8px; color: #555; border-top: 0.5px solid #333; }
+        .color-stepper { display: flex; align-items: center; gap: 10px; background: #2c2c2e; padding: 2px 8px; border-radius: 6px; }
+        .step-btn { width: 24px; height: 24px; background: #3a3a3c; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+    </style>
+</head>
+<body id="body-root">
+
+<div id="app-container">
+    <div id="main-menu">
+        <div class="header">
+            <div class="header-icons" style="display:flex; gap:6px; align-items: center;">
+                <svg class="icon-svg" onclick="togglePanel('settings-panel')" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84a.483.483 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.488.488 0 0 0-.59.22L3.02 8.87a.49.49 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.27.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.03-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                <svg class="icon-svg" onclick="togglePanel('music-list-panel')" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+                <svg class="icon-svg" id="pick-btn" viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+                <svg class="icon-svg" id="play-btn" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg class="icon-svg" onclick="togglePanel('fav-panel')" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            </div>
+            <div class="header-title" style="flex:1; text-align:right; margin-right:10px; font-size:11px">Memory Editer Pro</div>
+            <span onclick="resetAll()" style="color:#ff453a; font-size:18px; cursor:pointer">↻</span>
+        </div>
+        
+        <div id="settings-panel">
+            <div style="font-size:11px; margin-bottom:10px; color:#0a84ff; text-align:center; font-weight:bold">CÀI ĐẶT</div>
+            <div style="font-size:9px; color:#8e8e93">Vùng nhớ bắt đầu:</div>
+            <input type="text" id="setMemStart">
+            <div style="font-size:9px; color:#8e8e93">Vùng nhớ kết thúc:</div>
+            <input type="text" id="setMemEnd">
+            <div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+                <span>Tông màu nền</span>
+                <div class="color-stepper">
+                    <div class="step-btn" onclick="stepColor(-1)">-</div>
+                    <div id="colorName" style="font-size: 10px; min-width: 60px; text-align: center;">Mặc định</div>
+                    <div class="step-btn" onclick="stepColor(1)">+</div>
+                </div>
+            </div>
+            <div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+                <span>Rainbow Tất Cả</span>
+                <input type="checkbox" id="rbToggle" onchange="applyRainbow()" style="width:20px; height:20px">
+            </div>
+            <div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+                <span>Nền Rainbow Trượt</span>
+                <input type="checkbox" id="discoToggle" onchange="applyDisco()" style="width:20px; height:20px">
+            </div>
+            <button class="blue" style="width:100%; height:35px" onclick="saveSettings()">LƯU CÀI ĐẶT</button>
+        </div>
+
+        <div id="fav-panel">
+            <div style="font-size:11px; margin-bottom:10px; color:#ff9500; text-align:center; font-weight:bold">YÊU THÍCH</div>
+            <input type="text" id="fav_edit_val" placeholder="Giá trị mới...">
+            <div class="btn-row">
+                <button class="orange" onclick="editInFav()">SỬA CHỌN</button>
+                <button class="gray" onclick="togglePanel('fav-panel')">ĐÓNG</button>
+            </div>
+            <div id="fav-list-body" class="item-list"></div>
+        </div>
+
+        <div id="music-list-panel">
+            <div style="font-size:11px; margin-bottom:10px; color:#bf00ff; text-align:center; font-weight:bold">PLAYLIST NHẠC</div>
+            <div id="music-list-body"></div>
+            <button class="gray" style="width:100%; margin-top:10px;" onclick="togglePanel('music-list-panel')">ĐÓNG</button>
+        </div>
+
+        <div class="type-selector">
+            <div class="type-scroll">
+                <div class="type-btn active" onclick="setT('F64', this)">F64</div>
+                <div class="type-btn" onclick="setT('F32', this)">F32</div>
+                <div class="type-btn" onclick="setT('I64', this)">I64</div>
+                <div class="type-btn" onclick="setT('I32', this)">I32</div>
+            </div>
+        </div>
+
+        <div class="main-scroll">
+            <input type="text" id="ipt" placeholder="Giá trị tìm...">
+            <div class="btn-row">
+                <button class="blue" onclick="doSearch(false)">TÌM MỚI</button>
+                <button class="gray" onclick="doSearch(true)">LỌC</button>
+            </div>
+            <div id="result-count"></div>
+            <div id="edit-panel" style="display:none">
+                <input type="text" id="new_v" placeholder="Sửa giá trị...">
+                <div class="btn-row">
+                    <button class="blue" onclick="editAll()">SỬA HẾT</button>
+                    <button class="blue" onclick="editSelected()">SỬA DÒNG</button>
+                </div>
+            </div>
+            <div id="res-list" class="item-list"></div>
+        </div>
+        <div class="footer">Memory Editer Pro | Cre: Long Đẹp Trai</div>
+    </div>
+</div>
+
+<input type="file" id="music-file" accept="audio/*" style="display:none">
+<audio id="audio-player" loop></audio>
+
+<script>
+function layout() {
+    // Kiểm tra hướng thiết bị
+    if (window.lastorientation == window.orientation) return;
+    window.lastorientation = window.orientation;
+
+    // Lấy kích thước màn hình thực tế
+    var screenW = window.screen.width;
+    var screenH = window.screen.height;
+
+    if (Math.abs(window.orientation) == 90) {
+        // Chế độ Ngang: Chiều rộng lúc này là Height của màn hình gốc
+        setWindowRect(0, 0, screenH, screenW);
+    } else {
+        // Chế độ Dọc
+        setWindowRect(0, 0, screenW, screenH);
+    }
+}
+
+// Gọi hàm layout ngay khi load trang
+layout();
+
+// Lắng nghe sự kiện xoay màn hình
+window.addEventListener("orientationchange", layout, false);
+
+// Thiết lập vùng kéo (nếu bạn muốn tiêu đề header có thể nắm kéo)
+// Ở đây ta set mặc định là không cho kéo toàn màn hình để tránh lỗi
+setWindowDrag(0, 0, 0, 0);
+    const style = document.createElement('style');
+style.innerHTML = `
+    * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    input, textarea { -webkit-user-select: text; user-select: text; }
+`;
+document.head.appendChild(style);
+
+const isInput = (el) => ['INPUT', 'TEXTAREA'].includes(el.tagName) || el.isContentEditable;
+
+
+    // --- 1. KHAI BÁO BIẾN HỆ THỐNG ---
+    var audio = document.getElementById("audio-player");
+    var pickBtn = document.getElementById("pick-btn");
+    var playBtn = document.getElementById("play-btn");
+    var fileInput = document.getElementById("music-file");
+    var musicData = null;
+
+    var rangeStart = localStorage.getItem('memStart') || '0x100000000';
+    var rangeEnd = localStorage.getItem('memEnd') || '0x200000000';
+    var cur_t = 'F64', globalTimer = null, selectedAddr = null, selectedType = null;
+    var lockList = {}, favList = {}; 
+
+    const svgLock = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>`;
+    const svgUnlock = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"/></svg>`;
+    const svgStar = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
+
+    var myPlaylist = [
+        { name: "Tinh Vệ", url: "https://files.catbox.moe/udbfrw.mp3" }
+
+    ];
+
+    var colorList = [
+        { name: "Mặc định", color: "rgba(28, 28, 30, 0.98)" },
+        { name: "Đen sâu", color: "#000000" },
+        { name: "Xanh tối", color: "#0a192f" },
+        { name: "Đỏ đô", color: "#2d0a0a" },
+        { name: "Tím ảo", color: "#1a0a2d" }
+    ];
+    var currentColorIdx = 0;
+
+    // --- 2. QUẢN LÝ GIAO DIỆN ---
+    function togglePanel(id) {
+        var p = document.getElementById(id);
+        var isVisible = (p.style.display === 'block');
+        document.getElementById('settings-panel').style.display = 'none';
+        document.getElementById('fav-panel').style.display = 'none';
+        document.getElementById('music-list-panel').style.display = 'none';
+        
+        if(!isVisible) { 
+            p.style.display = 'block'; 
+            if(id === 'fav-panel') renderFavs();
+            if(id === 'music-list-panel') renderMusicList();
+        }
+    }
+
+    function stepColor(dir) {
+        currentColorIdx = (currentColorIdx + dir + colorList.length) % colorList.length;
+        document.getElementById('colorName').innerText = colorList[currentColorIdx].name;
+        document.getElementById('main-menu').style.backgroundColor = colorList[currentColorIdx].color;
+    }
+
+    function applyRainbow() {
+        document.getElementById('main-menu').classList.toggle('rainbow-active', document.getElementById('rbToggle').checked);
+    }
+
+    function applyDisco() {
+        var isChecked = document.getElementById('discoToggle').checked;
+        var menu = document.getElementById('main-menu');
+        menu.classList.toggle('disco-active', isChecked);
+        if(!isChecked) menu.style.backgroundColor = colorList[currentColorIdx].color;
+    }
+
+    // --- 3. QUẢN LÝ NHẠC ---
+    function renderMusicList() {
+        var h = "";
+        myPlaylist.forEach((m, i) => {
+            var isActive = (audio.src === m.url);
+            h += `<div onclick="selectMusic(${i})" style="display:flex; justify-content:space-between; align-items:center; background:#2c2c2e; padding:10px; border-radius:8px; margin-bottom:5px; cursor:pointer;">
+                <span style="font-size:11px; color:white;">🎵 ${m.name}</span>
+                <div style="width:10px; height:10px; border-radius:50%; background:${isActive ? '#32d74b' : '#444'}"></div>
+            </div>`;
+        });
+        document.getElementById('music-list-body').innerHTML = h || "<div style='text-align:center;padding:15px;color:#555;'>Trống</div>";
+    }
+
+    function selectMusic(i) {
+        musicData = myPlaylist[i].url; 
+        audio.src = musicData;
+        audio.play();
+        playBtn.style.fill = "#32d74b"; 
+        renderMusicList(); 
+    }
+
+    pickBtn.onclick = () => fileInput.click();
+    fileInput.onchange = e => {
+        var r = new FileReader();
+        r.onload = x => {
+            musicData = x.target.result;
+            audio.src = musicData;
+            audio.play();
+            playBtn.style.fill = "#32d74b";
+        }
+        r.readAsDataURL(e.target.files[0]);
+    };
+
+    playBtn.onclick = () => {
+        if(musicData || audio.src) {
+            if (audio.paused) { audio.play(); playBtn.style.fill = "#32d74b"; }
+            else { audio.pause(); playBtn.style.fill = "white"; }
+        }
+    };
+
+    // --- 4. LOGIC H5GG (TÌM KIẾM/SỬA) ---
+    function saveSettings() {
+        let s = document.getElementById('setMemStart').value;
+        let e = document.getElementById('setMemEnd').value;
+        rangeStart = s.startsWith('0x') ? s : '0x' + s;
+        rangeEnd = e.startsWith('0x') ? e : '0x' + e;
+        localStorage.setItem('memStart', rangeStart);
+        localStorage.setItem('memEnd', rangeEnd);
+        togglePanel('settings-panel');
+    }
+
+    function doSearch(isRefine) {
+        var v = document.getElementById('ipt').value; if(!v) return;
+        if(!isRefine) h5gg.clearResults();
+        h5gg.searchNumber(v, cur_t, rangeStart, rangeEnd);
+        render();
+    }
+
+    function setT(t, e) {
+        cur_t = t;
+        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+        e.classList.add('active');
+    }
+
+    function createItem(addr, val, type, isL, isF) {
+        var displayAddr = "0x" + parseInt(addr).toString(16).toUpperCase();
+        return `<div class="item" onclick="selectRow('${addr}', '${val}', '${type}', this)">
+            <div>
+                <span style="font-size:8px; color:#5ac8fa; font-weight:bold">${type}</span>
+                <span style="color:#8e8e93; font-size:9px">${displayAddr.slice(-10)}</span>
+                <div class="action-btns">
+                    <div class="icon-btn ${isL?'locked':''}" onclick="toggleLock('${addr}', '${val}', '${type}', event)">${isL?svgLock:svgUnlock}</div>
+                    <div class="icon-btn ${isF?'faved':''}" onclick="toggleFav('${addr}', '${val}', '${type}', event)">${svgStar}</div>
+                </div>
+            </div>
+            <b style="color:#32d74b; font-size:13px">${val}</b>
+        </div>`;
+    }
+
+    function render() {
+        var res = h5gg.getResults(30); var h = "";
+        document.getElementById('result-count').innerText = "Tìm thấy: " + h5gg.getResultsCount();
+        for(var i=0; i<res.length; i++) {
+            h += createItem(res[i].address, lockList[res[i].address] ? lockList[res[i].address].value : res[i].value, res[i].type, !!lockList[res[i].address], !!favList[res[i].address]);
+        }
+        document.getElementById('res-list').innerHTML = h;
+        document.getElementById('edit-panel').style.display = res.length > 0 ? 'block' : 'none';
+    }
+
+    function renderFavs() {
+        var h = "";
+        for(var a in favList) h += createItem(a, lockList[a] ? lockList[a].value : favList[a].value, favList[a].type, !!lockList[a], true);
+        document.getElementById('fav-list-body').innerHTML = h || "<div style='text-align:center;padding:15px;color:#555;'>Trống</div>";
+    }
+
+    function selectRow(addr, val, type, el) {
+        selectedAddr = addr; selectedType = type;
+        document.getElementById('new_v').value = val;
+        document.getElementById('fav_edit_val').value = val;
+        document.querySelectorAll('.item').forEach(i => i.style.background = 'none');
+        el.style.background = 'rgba(10, 132, 255, 0.2)';
+    }
+
+    function toggleLock(addr, val, type, event) {
+        event.stopPropagation();
+        if(lockList[addr]) delete lockList[addr];
+        else {
+            lockList[addr] = { value: val, type: type };
+            if(!globalTimer) globalTimer = setInterval(() => { for(var a in lockList) h5gg.setValue(a, lockList[a].value, lockList[a].type); }, 200);
+        }
+        render(); if(document.getElementById('fav-panel').style.display === 'block') renderFavs();
+    }
+
+    function toggleFav(addr, val, type, event) {
+        event.stopPropagation();
+        if(favList[addr]) delete favList[addr]; else favList[addr] = { value: val, type: type };
+        render(); if(document.getElementById('fav-panel').style.display === 'block') renderFavs();
+    }
+
+    function editInFav() {
+        var v = document.getElementById('fav_edit_val').value;
+        if(v && selectedAddr) { h5gg.setValue(selectedAddr, v, selectedType); renderFavs(); render(); }
+    }
+
+    function editSelected() {
+        var v = document.getElementById('new_v').value;
+        if(v && selectedAddr) { h5gg.setValue(selectedAddr, v, selectedType); render(); }
+    }
+
+    function editAll() {
+        var v = document.getElementById('new_v').value; if(v) h5gg.editAll(v, cur_t); render();
+    }
+
+    function resetAll() {
+        h5gg.clearResults();
+        document.getElementById('res-list').innerHTML = "";
+        document.getElementById('edit-panel').style.display = 'none';
+        document.getElementById('result-count').innerText = "";
+    }
+
+    window.onload = function() {
+        document.getElementById('setMemStart').value = rangeStart.replace('0x', '');
+        document.getElementById('setMemEnd').value = rangeEnd.replace('0x', '');
+    };
+
+    // Chống copy/chuột phải
+    document.addEventListener("copy", e => e.preventDefault());
+    document.addEventListener("contextmenu", e => e.preventDefault());
+    document.body.style.webkitUserSelect = "none";
+    // địt mẹ mày copy làm chó
+</script>
+</body>
+</html>
