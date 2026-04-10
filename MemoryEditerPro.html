@@ -414,44 +414,23 @@ input:checked + .slider:before {
         <span>Chạy Script (.html/.js)</span>
     </div>
 </div>
-<div class="item" onclick="togglePanel('versions-panel')">
+<div class="item" onclick="togglePanel('old-version-panel')">
     <div style="display:flex; align-items:center; gap:10px;">
-        <svg style="width:16px; height:16px; fill:#00ffff;" viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.25 2.52.75-1.23-3.5-2.07V8h-1.5z"/></svg>
-        <span>Phiên bản cũ</span>
+        <svg style="width:16px; height:16px; fill:#5ac8fa;" viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+        <span>Chạy bản cũ (v1 - v5)</span>
     </div>
     <span style="color:#555">➜</span>
 </div>
 </div>
     <button class="gray" style="width:100%; margin-top:10px; height:30px" onclick="togglePanel('music-menu-panel')">ĐÓNG</button>
 </div>
-<div id="versions-panel" style="display:none; position:absolute; top:38px; left:0; width:100%; height:calc(100% - 38px); background:#1c1c1e; z-index:160; padding:10px; border-radius: 0 0 10px 10px; overflow-y: auto;">
-    <div style="font-size:15px; margin-bottom:10px; color:#00ffff; text-align:center; font-weight:bold">CÁC PHIÊN BẢN CŨ</div>
-        <div style="font-size:9px; margin-bottom:10px; color:red; text-align:center; font-weight:bold">Bản cũ sẽ có nhiều lỗi nhỏ</div>
-    <div class="item-list" style="background:#111; border: 1px solid #333;">
-        <div class="item" onclick="loadRawScript('https://raw.githubusercontent.com/Long373/LongMenu/refs/heads/main/v1.html')">
-            <span>Chạy bản V1</span>
-        </div>
-        <div class="item" onclick="loadRawScript('https://raw.githubusercontent.com/Long373/LongMenu/refs/heads/main/v2.html')">
-            <span>Chạy bản V2</span>
-        </div>
-        <div class="item" onclick="loadRawScript('https://raw.githubusercontent.com/Long373/LongMenu/refs/heads/main/v3.html')">
-            <span>Chạy bản V3</span>
-        </div>
-        <div class="item" onclick="loadRawScript('https://raw.githubusercontent.com/Long373/LongMenu/refs/heads/main/v4.html')">
-            <span>Chạy bản V4</span>
-        </div>
-        <div class="item" onclick="loadRawScript('https://raw.githubusercontent.com/Long373/LongMenu/refs/heads/main/v5.html')">
-            <span>Chạy bản V5</span>
-        </div>
-        <div class="item" onclick="loadRawScript('https://raw.githubusercontent.com/Long373/LongMenu/refs/heads/main/v6.html')">
-            <span>Chạy bản V6</span>
-        </div>
-        <div class="item" onclick="loadRawScript('https://raw.githubusercontent.com/Long373/LongMenu/refs/heads/main/v7.html')">
-            <span>Chạy bản V7</span>
-        </div>
+
+<div id="old-version-panel" style="display:none; position:absolute; top:38px; left:0; width:100%; height:calc(100% - 38px); background:#1c1c1e; z-index:160; padding:10px; border-radius: 0 0 10px 10px; overflow-y: auto;">
+    <div style="font-size:11px; margin-bottom:10px; color:#5ac8fa; text-align:center; font-weight:bold">CHỌN BẢN CŨ (v1 - v5)</div>
+    <div id="old-version-list" class="item-list"></div>
+    <button class="gray" style="width:100%; margin-top:10px; height:30px" onclick="togglePanel('music-menu-panel')">QUAY LẠI</button>
 </div>
-    <button class="gray" style="width:100%; margin-top:10px; height:30px" onclick="togglePanel('versions-panel')">ĐÓNG</button>
-</div>
+
 <div id="music-list-panel">
     <div style="font-size:15px; margin-bottom:1px; color:#bf00ff; text-align:center; font-weight:bold">PLAYLIST NHẠC</div>
     <div style="font-size:7px; color:#8e8e93; text-align:center; margin-bottom:10px; font-style: italic;">
@@ -548,28 +527,7 @@ let lastTime = performance.now();
 let frames = 0;
 
 fpsEl.innerText = "60 FPS";
-async function loadRawScript(u) {
-    document.body.innerHTML = `
-        <div style="background:#1a1a1a;border-radius: 10px;color:#0f0; height:100vh; width:100vw; display:flex; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; position:fixed; top:0; left:0; z-index:9999;">
-            <div style="width:50px;height:50px; border:5px solid #333; border-top:5px solid #0f0; border-radius:50%; animation:spin 1s linear infinite;"></div>
-            <p style="margin-top:20px; font-weight:bold;">ĐANG TẢI PHIÊN BẢN...</p>
-            <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
-        </div>
-    `;
 
-    try {
-        const r = await fetch(u);
-        if (!r.ok) throw new Error();
-        const c = await r.text();
-
-        document.open();
-        document.write(c);
-        document.close();
-    } catch (e) {
-        alert("Lỗi: Không thể tải phiên bản này. Vui lòng kiểm tra lại link Raw!");
-        location.reload();
-    }
-}
 function loop(now){
     frames++;
     if(now - lastTime >= 800){
@@ -584,15 +542,19 @@ function loop(now){
 requestAnimationFrame(loop);
 
 function updateClock(){
-    const clock = document.getElementById("clock"); 
-    if(!clock) return; 
+    // Thêm dòng khai báo này
+    const clockElement = document.getElementById("clock");
+    
+    // Kiểm tra nếu không tìm thấy element thì thoát hàm (tránh bị crash)
+    if (!clockElement) return;
 
     const now = new Date().toLocaleString("en-US",{timeZone:"Asia/Ho_Chi_Minh"});
     const t = new Date(now);
 
-    clock.innerText = 
-        String(t.getHours()).padStart(2,"0")+":"+
-        String(t.getMinutes()).padStart(2,"0")+":"+
+    // Dùng clockElement thay vì gọi trực tiếp clock
+    clockElement.innerText = 
+        String(t.getHours()).padStart(2,"0") + ":" +
+        String(t.getMinutes()).padStart(2,"0") + ":" +
         String(t.getSeconds()).padStart(2,"0");
 }
 
@@ -755,7 +717,7 @@ function updateSpeed(val) {
     var p = document.getElementById(id);
     var isVisible = (p.style.display === 'block');
     
-    var panels = ['settings-panel', 'fav-panel', 'music-list-panel', 'music-menu-panel', 'nearby-panel', 'versions-panel'];
+    var panels = ['settings-panel', 'fav-panel', 'music-list-panel', 'music-menu-panel', 'nearby-panel', 'old-version-panel'];
     panels.forEach(pId => {
         var el = document.getElementById(pId);
         if(el) el.style.display = 'none';
@@ -765,6 +727,7 @@ function updateSpeed(val) {
         p.style.display = 'block'; 
         if(id === 'fav-panel') renderFavs();
         if(id === 'music-list-panel') renderMusicList();
+        if(id === 'old-version-panel') renderOldVersions();
     }
 }
 
@@ -1201,23 +1164,15 @@ function showWarning(msg) {
 
     const box = document.createElement('div');
     box.innerHTML = `
-        <div style="text-align:center; padding:20px; border:2px solid #ff453a; border-radius:15px; background:#1c1c1e; width:100%; box-sizing:border-box;">
+        <div style="text-align:center; padding:20px; border:2px solid #ff453a; border-radius:15px; background:#1c1c1e; width:100%;">
             <h2 style="color:#ff453a; margin-top:0;">⚠️ CẢNH BÁO</h2>
             <p style="font-size:14px; line-height:1.5;">${msg}</p>
-            <p style="font-size:12px; color:#ffcc00; font-weight:bold; margin-top:10px;">Lưu ý: Menu sẽ chỉ hoạt động các chức năng trên h5gg!</p>
-            <button id="tryMenuBtn" style="background:#ff453a; color:white; border:none; padding:8px 20px; border-radius:16px; font-weight:bold; margin-top:16px; cursor:pointer;">THỬ IU MENU</button>
+            <button onclick="location.reload()" style="background:#ff453a; color:white; border:none; padding:6px 20px; border-radius:16px; font-weight:bold; margin-top:16px;">THỬ LẠI</button>
         </div>
     `;
     
     overlay.appendChild(box);
     document.body.appendChild(overlay);
-    document.getElementById('tryMenuBtn').onclick = function() {
-        document.body.removeChild(overlay);
-        document.getElementById('app-container').style.display = 'flex';
-        if (typeof centerMenu === 'function') {
-            setTimeout(centerMenu, 100);
-        }
-    };
 }
 
 window.addEventListener('load', function () {
@@ -1405,6 +1360,53 @@ function unlockAudio() {
     if (!audioCtx) return;
     if (audioCtx.state === "suspended") {
         audioCtx.resume();
+    }
+}
+function renderOldVersions() {
+    var h = "";
+    for(var i = 1; i <= 5; i++) {
+        h += `<div class="item" onclick="loadOldVersion(${i})" style="cursor:pointer">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:12px; color:#5ac8fa; font-weight:bold">v${i}</span>
+                <span style="color:#e5e5ea; font-size:11px">Memory Editer Pro (Bản cũ v${i})</span>
+            </div>
+            <span style="color:#5ac8fa">➜</span>
+        </div>`;
+    }
+    document.getElementById('old-version-list').innerHTML = h;
+}
+async function loadOldVersion(v) {
+    const url = `https://raw.githubusercontent.com/Long373/oldversion/refs/heads/main/v${v}.html`;
+    document.body.innerHTML = `
+        <div style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#1a1a1a; color:#0f0; font-family:sans-serif; position:fixed; top:0; left:0; width:100%; z-index:10000;">
+            <div style="width:70px; height:70px; border:6px solid #333; border-top:6px solid #0f0; border-radius:50%; animation: spin 1s linear infinite;"></div>
+            <div style="text-align:center; margin-top:20px;">
+                <p style="margin:0; font-size:14px; font-weight:700; letter-spacing:1px;">MEMORY EDITER PRO</p>
+                <p style="margin:5px 0 0; font-size:11px; color:#fff;" id="load-status">Đang tải phiên bản v${v}...</p>
+            </div>
+            <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+        </div>
+    `;
+
+    try {
+        // 2. Fetch code từ GitHub
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error("Không tìm thấy file");
+        }
+
+        const code = await response.text();
+        const status = document.getElementById("load-status"); 
+        status.innerText = "Đang khởi động...";
+        await new Promise(res => setTimeout(res, 600)); 
+        document.open();
+        document.write(code);
+        document.close();
+
+    } catch (err) {
+        alert("Lỗi: Không thể tải bản v" + v + "\n(Có thể file chưa được tải lên hoặc lỗi mạng)");
+        location.reload();
     }
 }
 </script>
