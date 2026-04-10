@@ -239,6 +239,7 @@ input:checked + .slider:before {
 .history-item:active { background: #2c2c2e; }
     </style>
 </head>
+    <canvas id="matrix-bg" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; display: none; pointer-events: none;"></canvas>
 <body id="body-root">
 
 <div id="app-container" style="display:none;">
@@ -303,9 +304,18 @@ input:checked + .slider:before {
 </div>
 
 <div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+    <span><div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
     <span>Nền Rainbow Trượt</span>
     <label class="ios-switch">
         <input type="checkbox" id="discoToggle" onchange="applyDisco()">
+        <span class="slider"></span>
+    </label>
+</div> 
+<div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+    <span><div style="margin: 12px 0; display:flex; justify-content: space-between; align-items: center; font-size: 11px;">
+    <span>Hiệu ứng Matrix</span>
+    <label class="ios-switch">
+        <input type="checkbox" id="matrixToggle" onclick="toggleMatrix()">
         <span class="slider"></span>
     </label>
 </div>
@@ -1408,6 +1418,63 @@ async function loadOldVersion(v) {
         location.reload();
     }
 }
+    let matrixInterval = null;
+const matrixCanvas = document.getElementById('matrix-bg');
+const mCtx = matrixCanvas.getContext('2d');
+
+function initMatrix() {
+    matrixCanvas.width = window.innerWidth;
+    matrixCanvas.height = window.innerHeight;
+
+    const alphabet = "qweabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+    const fontSize = 16;
+    const columns = Math.floor(matrixCanvas.width / fontSize);
+    const drops = [];
+    for (let x = 0; x < columns; x++) drops[x] = 1;
+
+    function draw() {
+        mCtx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        mCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+        
+        mCtx.fillStyle = "#0F0"; 
+        mCtx.font = fontSize + "px monospace";
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+            mCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+    }
+
+    if (matrixInterval) clearInterval(matrixInterval);
+    matrixInterval = setInterval(draw, 35);
+}
+
+function toggleMatrix() {
+    let isOn = document.getElementById("matrixToggle").checked;
+    matrixCanvas.style.display = isOn ? "block" : "none";
+    
+    if (isOn) {
+        initMatrix();
+    } else {
+        if (matrixInterval) clearInterval(matrixInterval);
+        mCtx.clearRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+    }
+    localStorage.setItem("matrix_enabled", isOn);
+}
+window.addEventListener('load', () => {
+    let saved = localStorage.getItem("matrix_enabled") === "true";
+    if (saved) {
+        const toggle = document.getElementById("matrixToggle");
+        if (toggle) toggle.checked = true;
+        matrixCanvas.style.display = "block";
+        initMatrix();
+    }
+});
 </script>
 </body>
 </html>
