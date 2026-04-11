@@ -1423,37 +1423,6 @@ async function loadOldVersion(v) {
  location.reload();
     }
 }
-
-// ------ JAVASCRIPT CHO HIỆU ỨNG HACKER THÊM VÀO ------ //
-const matrixCanvas = document.getElementById('matrix-bg');
-const mCtx = matrixCanvas.getContext('2d');
-matrixCanvas.width = window.innerWidth;
-matrixCanvas.height = window.innerHeight;
-const mAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@%&*^+-";
-const mFontSize = 14;
-const mCols = matrixCanvas.width / mFontSize;
-const mDrops = [];
-for(let x = 0; x < mCols; x++) mDrops[x] = 1;
-
-function drawMatrixBg() {
-    mCtx.fillStyle = "rgba(0, 0, 0, 0.05)";
-    mCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
-    mCtx.fillStyle = "#0F0";
-    mCtx.font = mFontSize + "px monospace";
-    for(let i = 0; i < mDrops.length; i++) {
-        const text = mAlphabet.charAt(Math.floor(Math.random() * mAlphabet.length));
-        mCtx.fillText(text, i * mFontSize, mDrops[i] * mFontSize);
-        if(mDrops[i] * mFontSize > matrixCanvas.height && Math.random() > 0.975) mDrops[i] = 0;
-        mDrops[i]++;
-    }
-}
-setInterval(drawMatrixBg, 30);
-window.addEventListener('resize', () => {
-    matrixCanvas.width = window.innerWidth;
-    matrixCanvas.height = window.innerHeight;
-});
-// -------------------------------------------------- //
-
 //https://pastefy.app/zbSxssMc/raw
 </script>
 </body>
