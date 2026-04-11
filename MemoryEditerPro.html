@@ -52,10 +52,9 @@
     font-style: italic;
 }
         #main-menu {
-            width: 100%;
-            height: 100%; background: rgba(28, 28, 30, 0.98); 
+            width: 100%; height: 100%; background: rgba(28, 28, 30, 0.98); 
             border: 1px solid #444; border-radius: 10px;
-            display: flex; flex-direction: column; color: white;
+            display: flex; flex-direction: column; color: white; 
             position: relative; 
         }
 
@@ -92,8 +91,8 @@
 
         .rainbow-active span, .rainbow-active b, .rainbow-active div, 
         .rainbow-active button, .rainbow-active input, .rainbow-active svg { 
-            animation: rb-text 3s linear infinite;
-}
+            animation: rb-text 3s linear infinite; 
+        }
 
         .icon-svg { width: 20px; height: 20px; fill: white; cursor: pointer; transition: 0.2s; }
         .icon-svg:hover { transform: scale(1.1); }
@@ -101,28 +100,26 @@
         .header { padding: 8px 10px; font-weight: bold; border-bottom: 0.5px solid #3a3a3c; font-size: 13px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; z-index: 10; }
         
         #settings-panel, #fav-panel, #music-list-panel {
-            display: none;
-            position: absolute; top: 38px; left: 0; width: 100%; height: calc(100% - 38px);
-            background: #1c1c1e; z-index: 100; padding: 10px;
-            border-radius: 0 0 10px 10px; overflow-y: auto; 
+            display: none; position: absolute; top: 38px; left: 0; width: 100%; height: calc(100% - 38px);
+            background: #1c1c1e; z-index: 100; padding: 10px; border-radius: 0 0 10px 10px; overflow-y: auto; 
         }
 
         .main-scroll { flex: 1; overflow-y: auto; padding: 0 10px; }
         .type-selector { padding: 4px; background: #2c2c2e; margin: 4px 5px; border-radius: 8px; }
         .type-scroll { 
-    display: grid;
+    display: grid; 
     grid-template-columns: repeat(3, 1fr); 
     gap: 4px;
 } 
 .type-btn { 
     padding: 5px 0; 
     border-radius: 6px; 
-    text-align: center;
+    text-align: center; 
     background: #3a3a3c; 
     color: #8e8e93; 
     font-size: 8px; 
     border: none; 
-    font-weight: bold;
+    font-weight: bold; 
 }
         .type-btn.active { background: #0a84ff; color: white !important; }
 
@@ -167,11 +164,11 @@
 }
 .taichi::before { 
     top: 25%; background: #fff; 
-    background-image: radial-gradient(circle, #000 25%, transparent 25%);
+    background-image: radial-gradient(circle, #000 25%, transparent 25%); 
 }
 .taichi::after { 
     top: 25%; left: 50%; background: #000; 
-    background-image: radial-gradient(circle, #fff 25%, transparent 25%);
+    background-image: radial-gradient(circle, #fff 25%, transparent 25%); 
 }
 
 @keyframes spinning { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -240,7 +237,9 @@ input:checked + .slider:before {
 }
 
 .history-item:active { background: #2c2c2e; }
-
+    </style>
+</head>
+<body id="body-root">
 
 <div id="app-container" style="display:none;">
     <div id="main-menu">
@@ -258,7 +257,6 @@ input:checked + .slider:before {
         <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
     </svg>
 </div>
-         
             <div class="header-title" style="color:#0f0; flex:1; text-align:right; margin-right:10%; font-size:13px">Memory Editer Pro</div>
             <span onclick="resetAll()" style="color:red; font-size:18px; cursor:pointer">↻</span>
         </div>
@@ -380,8 +378,7 @@ input:checked + .slider:before {
                 <button class="gray" onclick="togglePanel('fav-panel')">ĐÓNG</button>
             </div>
             <div id="fav-list-body" class="item-list"></div>
-   
-         </div>
+        </div>
 <div id="music-menu-panel" style="display:none; position:absolute; top:38px; left:0; width:100%; height:calc(100% - 38px); background:rgba(28, 28, 30, 0.98); z-index:150; padding:10px; border-radius: 0 0 10px 10px; overflow-y: auto;">
     <div style="font-size:11px; color:#bf00ff; text-align:center; margin-bottom:12px; font-weight:bold;">TÙY CHỌN NHẠC</div>
     
@@ -477,14 +474,12 @@ input:checked + .slider:before {
                 <button class="blue" onclick="doSearch(false)">TÌM MỚI</button>
                 <button class="gray" onclick="doSearch(true)">LỌC</button>
             </div>
-        
             <div id="result-count"></div>
             <div id="edit-panel" style="display:none">
                 <input type="text" id="new_v" placeholder="Sửa giá trị...">
                 <div class="btn-row">
                     <button class="blue" onclick="editAll()">SỬA HẾT</button>
-                    
- <button class="blue" onclick="editSelected()">SỬA DÒNG</button>
+                    <button class="blue" onclick="editSelected()">SỬA DÒNG</button>
                 </div>
             </div>
             <div id="res-list" class="item-list"></div>
@@ -503,40 +498,41 @@ input:checked + .slider:before {
 
 document.getElementById('script-file').onchange = function(e) {
     const file = e.target.files[0];
- if (!file) return;
+    if (!file) return;
     const audio = document.getElementById("audio-player");
     const fileName = file.name.toLowerCase();
- if (fileName.endsWith('.js')) {
+    
+    if (fileName.endsWith('.js')) {
         const reader = new FileReader();
- reader.onload = function(event) {
+        reader.onload = function(event) {
             try {
-                eval(event.target.result);
- alert("Đã thực thi Script: " + file.name);
+                eval(event.target.result); 
+                alert("Đã thực thi Script: " + file.name);
             } catch (err) {
                 alert("Lỗi thực thi JS: " + err);
- }
+            }
         };
         reader.readAsText(file);
- } 
+    } 
     else if (fileName.endsWith('.html')) {
         const fileURL = URL.createObjectURL(file);
- window.location.href = fileURL;
+        window.location.href = fileURL;
     }
     
     e.target.value = ''; 
 };
 
 const fpsEl = document.getElementById("fps");
- let lastTime = performance.now();
+let lastTime = performance.now();
 let frames = 0;
 
 fpsEl.innerText = "60 FPS";
 
 function loop(now){
     frames++;
- if(now - lastTime >= 800){
+    if(now - lastTime >= 800){
         let fps = Math.round((frames * 1000) / (now - lastTime));
- fpsEl.innerText = fps + " FPS";
+        fpsEl.innerText = fps + " FPS";
         frames = 0;
         lastTime = now;
     }
@@ -544,19 +540,23 @@ function loop(now){
 }
 
 requestAnimationFrame(loop);
- function updateClock(){
+
+function updateClock(){
     // Thêm dòng khai báo này
     const clockElement = document.getElementById("clock");
- // Kiểm tra nếu không tìm thấy element thì thoát hàm (tránh bị crash)
+    
+    // Kiểm tra nếu không tìm thấy element thì thoát hàm (tránh bị crash)
     if (!clockElement) return;
- const now = new Date().toLocaleString("en-US",{timeZone:"Asia/Ho_Chi_Minh"});
+
+    const now = new Date().toLocaleString("en-US",{timeZone:"Asia/Ho_Chi_Minh"});
     const t = new Date(now);
- // Dùng clockElement thay vì gọi trực tiếp clock
+
+    // Dùng clockElement thay vì gọi trực tiếp clock
     clockElement.innerText = 
         String(t.getHours()).padStart(2,"0") + ":" +
         String(t.getMinutes()).padStart(2,"0") + ":" +
         String(t.getSeconds()).padStart(2,"0");
- }
+}
 
 updateClock();
 setInterval(updateClock,1000);
@@ -564,44 +564,47 @@ setInterval(updateClock,1000);
 function setWindowTouch(ignore) {
     if (typeof h5gg !== 'undefined') {
         h5gg.setWindowTouch(ignore);
- }
+    }
 }
 
 function toggleMenuVisibility(isVisible) {
     const menu = document.getElementById('main-menu');
     const appContainer = document.getElementById('app-container');
- if (isVisible) {
+    
+    if (isVisible) {
         menu.style.display = 'flex';
         appContainer.style.display = 'flex';
-        setWindowTouch(true);
- } else {
+        setWindowTouch(true); 
+    } else {
         menu.style.display = 'none';
         appContainer.style.display = 'none';
-        setWindowTouch(false);
- }
+        setWindowTouch(false); 
+    }
 }
 
 function updateMusicUI(isPlaying) {
     const svgStatus = document.getElementById('music-svg-status');
     const textStatus = document.getElementById('music-text-status');
- const playSvg = `<svg style="width:18px; height:18px; fill:#0a84ff;" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-    const pauseSvg = `<svg style="width:18px; height:18px; fill:#ff453a;"
- viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+    
+    const playSvg = `<svg style="width:18px; height:18px; fill:#0a84ff;" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+    const pauseSvg = `<svg style="width:18px; height:18px; fill:#ff453a;" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
 
     if (isPlaying) {
         if(svgStatus) svgStatus.innerHTML = pauseSvg;
- if(textStatus) textStatus.innerText = "Tạm dừng";
+        if(textStatus) textStatus.innerText = "Tạm dừng";
     } else {
         if(svgStatus) svgStatus.innerHTML = playSvg;
- if(textStatus) textStatus.innerText = "Phát nhạc";
+        if(textStatus) textStatus.innerText = "Phát nhạc";
     }
 }
 
 var lastTapTime = 0;
 var lockIntervalMs = parseInt(localStorage.getItem('savedLockMs')) || 200;
- document.addEventListener("touchstart", unlockAudio, { once: true });
+
+document.addEventListener("touchstart", unlockAudio, { once: true });
 document.addEventListener("click", unlockAudio, { once: true });
- window.addEventListener('load', function() {
+
+window.addEventListener('load', function() {
     if(localStorage.getItem('memStart')) {
         rangeStart = localStorage.getItem('memStart');
         rangeEnd = localStorage.getItem('memEnd');
@@ -614,15 +617,14 @@ document.addEventListener("click", unlockAudio, { once: true });
     if(localStorage.getItem('savedColorIdx')) {
         currentColorIdx = parseInt(localStorage.getItem('savedColorIdx'));
         document.getElementById('main-menu').style.backgroundColor = colorList[currentColorIdx].color;
-    
-     document.getElementById('colorName').innerText = colorList[currentColorIdx].name;
+        document.getElementById('colorName').innerText = colorList[currentColorIdx].name;
     }
 
     document.getElementById('rbToggle').checked = localStorage.getItem('rb_enabled') === 'true';
     applyRainbow(); 
 
     document.getElementById('discoToggle').checked = localStorage.getItem('disco_enabled') === 'true';
- if(document.getElementById('discoToggle').checked) applyDisco();
+    if(document.getElementById('discoToggle').checked) applyDisco();
 
     document.getElementById('taichiToggle').checked = localStorage.getItem('taichi_enabled') === 'true';
     document.getElementById('tcSpeedInput').value = localStorage.getItem('tc_speed') || 5;
@@ -630,64 +632,65 @@ document.addEventListener("click", unlockAudio, { once: true });
     updateSpeed(document.getElementById('tcSpeedInput').value);
 
     document.getElementById('autoFilterToggle').checked = localStorage.getItem('autoFilter_enabled') === 'true';
- document.getElementById('filterSpeedInput').value = localStorage.getItem('filter_speed') || 1.5;
+    document.getElementById('filterSpeedInput').value = localStorage.getItem('filter_speed') || 1.5;
     if(document.getElementById('autoFilterToggle').checked) toggleAutoFilter();
     
     var isEnabled = localStorage.getItem('sizeEnabled') === 'true';
- if (isEnabled) {
+    if (isEnabled) {
         document.getElementById('customSizeToggle').checked = true;
         document.getElementById('size-inputs').style.display = 'flex';
- var w = localStorage.getItem('savedW') || 300;
+        
+        var w = localStorage.getItem('savedW') || 300;
         var h = localStorage.getItem('savedH') || 300;
         
         document.getElementById('menuWidth').value = w;
         document.getElementById('menuHeight').value = h;
- menuWidth = parseInt(w);
+        
+        menuWidth = parseInt(w);
         menuHeight = parseInt(h);
     }
 });
 
 function applyTaiChi() {
     var container = document.getElementById('taichi-container');
- var ctrl = document.getElementById('tc-speed-ctrl');
+    var ctrl = document.getElementById('tc-speed-ctrl');
     var isChecked = document.getElementById('taichiToggle').checked;
     
     if(container) container.style.display = isChecked ? 'block' : 'none';
- if(ctrl) ctrl.style.display = isChecked ? 'flex' : 'none';
+    if(ctrl) ctrl.style.display = isChecked ? 'flex' : 'none';
 }
 
 function updateSpeed(val) {
     var taichi = document.querySelector('.taichi');
- if (taichi) {
-        var speedVal = (val && val > 0) ?
- val : 5;
+    if (taichi) {
+        var speedVal = (val && val > 0) ? val : 5;
         taichi.style.setProperty('--tc-speed', speedVal + "s");
         taichi.style.animationDuration = speedVal + "s";
     }
 }
 
     var audio = document.getElementById("audio-player");
- var fileInput = document.getElementById("music-file");
+    var fileInput = document.getElementById("music-file");
     var musicData = null;
 
     var rangeStart = localStorage.getItem('memStart') || '0x100000000';
     var rangeEnd = localStorage.getItem('memEnd') || '0x200000000';
- var cur_t = 'F64', globalTimer = null, selectedAddr = null, selectedType = null;
+    var cur_t = 'F64', globalTimer = null, selectedAddr = null, selectedType = null;
     var lockIntervalMs = 200;
- var lockList = {}, favList = {}; 
+    var lockList = {}, favList = {}; 
 
     const svgLock = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>`;
- const svgUnlock = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"/></svg>`;
- const svgStar = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
- var myPlaylist = [
+    const svgUnlock = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"/></svg>`;
+    const svgStar = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
+
+    var myPlaylist = [
         { name: "Tinh Vệ", url: "https://file.garden/acqNoHMS1QleW-fL/Tinh%20Va%CC%81%C2%BB%C2%87%20(e%CC%80%C2%AD%C2%A6a%CC%8A%C2%8D%C2%AB)%20-%20Nha%CC%81%C2%BA%C2%A5t%20Kha%CC%81%C2%BB%C2%8Fa%20Lang%20Tinh%20(ba%CC%81%C2%BA%C2%A3n%20hA%CC%83%C2%AD)%20(create%20@trahoaam).mp3" },
         { name: "VAPO NO SETOR", url: "https://files.catbox.moe/ccw4n4.mp3" },
         { name: "BLAH!", url: "https://files.catbox.moe/5i8nil.mp3" },
         { name: "NUNCA MUDA?", url: "https://files.catbox.moe/cdovkz.mp3" },
         { name: "NO BATIDÃO", url: "https://files.catbox.moe/g6u1s9.mp3" },
         { name: "MONTAGEM RABETA", url: "https://files.catbox.moe/6uvvu6.mp3" },
-        { name: "METAMORPHOSIS", url: "https://files.catbox.moe/ta4ikl.mp3" 
- },
+        { name: "METAMORPHOSIS", url: "https://files.catbox.moe/ta4ikl.mp3" },
         { name: "RAVE", url: "https://files.catbox.moe/agn6bu.mp3" },
         { name: "GOZALO", url: "https://files.catbox.moe/9h8w4t.mp3" },
         { name: "VOCE NA MIRA", url: "https://files.catbox.moe/yr56f7.mp3" },
@@ -695,12 +698,12 @@ function updateSpeed(val) {
         { name: "TALI", url: "https://files.catbox.moe/0wo63g.mp3" },
         { name: "GLORY", url: "https://files.catbox.moe/p4mlpf.mp3" },
         { name: "Funk de Beleza", url: "https://file.garden/acqNoHMS1QleW-fL/Funk%20de%20Beleza%20(Slowed).mp3" },
-     
         { name: "HEAVENLY JUMPSTYLE", url: "https://files.catbox.moe/kgqq7j.mp3" },
         { name: "MONTAGEM HIKARI", url: "https://files.catbox.moe/3iejrs.mp3" },
         { name: "PASSO BEM SOLTO", url: "https://file.garden/acqNoHMS1QleW-fL/ATLXS%20-%20PASSO%20BEM%20SOLTO%20(SLOWED).mp3" }
     ];
- var colorList = [
+
+    var colorList = [
         { name: "Mặc định", color: "rgba(28, 28, 30, 0.98)" },
         { name: "Đen sâu", color: "#000000" },
         { name: "Xanh tối", color: "#0a192f" },
@@ -708,56 +711,58 @@ function updateSpeed(val) {
         { name: "Tím ảo", color: "#1a0a2d" },
         { name: "Xanh ánh", color: "#00bfff" }
     ];
- var currentColorIdx = 0;
+    var currentColorIdx = 0;
 
     function togglePanel(id) {
     var p = document.getElementById(id);
     var isVisible = (p.style.display === 'block');
- var panels = ['settings-panel', 'fav-panel', 'music-list-panel', 'music-menu-panel', 'nearby-panel', 'old-version-panel'];
+    
+    var panels = ['settings-panel', 'fav-panel', 'music-list-panel', 'music-menu-panel', 'nearby-panel', 'old-version-panel'];
     panels.forEach(pId => {
         var el = document.getElementById(pId);
         if(el) el.style.display = 'none';
     });
- if(!isVisible) { 
+    
+    if(!isVisible) { 
         p.style.display = 'block'; 
         if(id === 'fav-panel') renderFavs();
- if(id === 'music-list-panel') renderMusicList();
+        if(id === 'music-list-panel') renderMusicList();
         if(id === 'old-version-panel') renderOldVersions();
     }
 }
 
     function stepColor(dir) {
         currentColorIdx = (currentColorIdx + dir + colorList.length) % colorList.length;
- document.getElementById('colorName').innerText = colorList[currentColorIdx].name;
+        document.getElementById('colorName').innerText = colorList[currentColorIdx].name;
         document.getElementById('main-menu').style.backgroundColor = colorList[currentColorIdx].color;
     }
 
     function applyRainbow() {
         document.getElementById('main-menu').classList.toggle('rainbow-active', document.getElementById('rbToggle').checked);
- }
+    }
 
     function applyDisco() {
     var isChecked = document.getElementById('discoToggle').checked; 
     var menu = document.getElementById('main-menu');
- if(isChecked) {
+    
+    if(isChecked) {
         menu.classList.add('disco-active');
- } else {
+    } else {
         menu.classList.remove('disco-active');
         menu.style.background = "rgba(28, 28, 30, 0.98)";
         menu.style.filter = "none";
- }
+    }
 }
 
     function renderMusicList() {
         var h = "";
- myPlaylist.forEach((m, i) => {
+        myPlaylist.forEach((m, i) => {
             var isActive = (audio.src === m.url);
             h += `<div onclick="selectMusic(${i})" style="display:flex; justify-content:space-between; align-items:center; background:#2c2c2e; padding:10px; border-radius:8px; margin-bottom:5px; cursor:pointer;">
  <div style="display:flex; align-items:center;">
     <svg class="icon-svg music-item-icon" style="width:12px; height:12px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; color:#bf00ff; margin-right:5px;" viewBox="0 0 24 24">
         <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
-        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 
- 1-2-2v-3a2 2 0 0 1 2-2h3z"/>
+        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/>
         <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
     </svg>
     <span style="font-size:11px; color:white;">${m.name}</span>
@@ -765,76 +770,73 @@ function updateSpeed(val) {
                 <div style="width:10px; height:10px; border-radius:50%; background:${isActive ? '#32d74b' : '#444'}"></div>
             </div>`;
         });
- document.getElementById('music-list-body').innerHTML = h || "<div style='text-align:center;padding:15px;color:#555;'>Trống</div>";
+        document.getElementById('music-list-body').innerHTML = h || "<div style='text-align:center;padding:15px;color:#555;'>Trống</div>";
     }
 
     function selectMusic(i) {
     var m = myPlaylist[i];
- if(!m) return;
+    if(!m) return;
     musicData = m.url; 
     audio.src = musicData;
     audio.play().then(() => {
         updateMusicUI(true); 
     });
- renderMusicList(); 
+    renderMusicList(); 
 }
 
 function saveSettings() {
     let s = document.getElementById('setMemStart').value;
     let e = document.getElementById('setMemEnd').value;
-    rangeStart = s.startsWith('0x') ?
- s : '0x' + s;
+    rangeStart = s.startsWith('0x') ? s : '0x' + s;
     rangeEnd = e.startsWith('0x') ? e : '0x' + e;
     localStorage.setItem('memStart', rangeStart);
     localStorage.setItem('memEnd', rangeEnd);
 
     localStorage.setItem('rb_enabled', document.getElementById('rbToggle').checked);
- localStorage.setItem('disco_enabled', document.getElementById('discoToggle').checked);
+    localStorage.setItem('disco_enabled', document.getElementById('discoToggle').checked);
     localStorage.setItem('taichi_enabled', document.getElementById('taichiToggle').checked);
     localStorage.setItem('autoFilter_enabled', document.getElementById('autoFilterToggle').checked);
     localStorage.setItem('savedColorIdx', currentColorIdx);
     localStorage.setItem('tc_speed', document.getElementById('tcSpeedInput').value);
     localStorage.setItem('filter_speed', document.getElementById('filterSpeedInput').value); 
     localStorage.setItem('borderRb_enabled', document.getElementById('borderRbToggle').checked);
-    localStorage.setItem('savedLockMs', document.getElementById('lockSpeedInput').value);
- let saveBtn = document.querySelector('#settings-panel .blue');
+    localStorage.setItem('savedLockMs', document.getElementById('lockSpeedInput').value); 
+    
+    let saveBtn = document.querySelector('#settings-panel .blue');
     let originalText = saveBtn.innerText;
     
     saveBtn.innerText = "ĐÃ LƯU CÀI ĐẶT  ✓";
     saveBtn.style.backgroundColor = "#32d74b";
- saveBtn.disabled = true; 
+    saveBtn.disabled = true; 
     setTimeout(() => {
         saveBtn.innerText = originalText;
         saveBtn.style.backgroundColor = "#0a84ff";
         saveBtn.disabled = false;
         togglePanel('settings-panel');
-    }, 1000);
- }
+    }, 1000); 
+}
 
     function setT(t, e) {
         cur_t = t;
- document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
         e.classList.add('active');
     }
 
 function createItem(addr, val, type, isL, isF) {
     var displayAddr = "0x" + parseInt(addr).toString(16).toUpperCase();
- return `<div class="item" onclick="selectRow('${addr}', '${val}', '${type}', this)">
+    return `<div class="item" onclick="selectRow('${addr}', '${val}', '${type}', this)">
         <div>
             <span style="font-size:8px; color:#5ac8fa; font-weight:bold">${type}</span>
             <span style="color:#8e8e93; font-size:9px">${displayAddr.slice(-10)}</span>
             <div class="action-btns">
                 <div class="icon-btn ${isL?'locked':''}" onclick="toggleLock('${addr}', '${val}', '${type}', event)">${isL?svgLock:svgUnlock}</div>
-                <div class="icon-btn ${isF?'faved':''}" onclick="toggleFav('${addr}', '${val}', '${type}', 
- event)">${svgStar}</div>
+                <div class="icon-btn ${isF?'faved':''}" onclick="toggleFav('${addr}', '${val}', '${type}', event)">${svgStar}</div>
                 <div class="icon-btn" style="background:#1a2aff" onclick="viewNearby('${addr}', '${type}', event)">
                     <svg style="width:14px; height:14px; fill:white" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
                 </div>
-      
-             </div>
+            </div>
         </div>
-        <b style="color:#32d74b;
- font-size:13px">${val}</b>
+        <b style="color:#32d74b; font-size:13px">${val}</b>
     </div>`;
 }
 
@@ -845,8 +847,7 @@ function createItem(addr, val, type, isL, isF) {
             h += createItem(res[i].address, lockList[res[i].address] ? lockList[res[i].address].value : res[i].value, res[i].type, !!lockList[res[i].address], !!favList[res[i].address]);
         }
         document.getElementById('res-list').innerHTML = h;
-        document.getElementById('edit-panel').style.display 
- = res.length > 0 ? 'block' : 'none';
+        document.getElementById('edit-panel').style.display = res.length > 0 ? 'block' : 'none';
     }
 
     function renderFavs() {
@@ -856,114 +857,111 @@ function createItem(addr, val, type, isL, isF) {
     }
 
     function selectRow(addr, val, type, el) {
-        selectedAddr = addr;
- selectedType = type;
+        selectedAddr = addr; selectedType = type;
         document.getElementById('new_v').value = val;
         document.getElementById('fav_edit_val').value = val;
         document.querySelectorAll('.item').forEach(i => i.style.background = 'none');
         el.style.background = 'rgba(10, 132, 255, 0.2)';
- }
+    }
 
     function toggleLock(addr, val, type, event) {
     event.stopPropagation();
- if(lockList[addr]) {
+    if(lockList[addr]) {
         delete lockList[addr];
- if (Object.keys(lockList).length === 0) {
+        if (Object.keys(lockList).length === 0) {
             clearInterval(globalTimer);
             globalTimer = null;
- }
+        }
     } else {
         lockList[addr] = { value: val, type: type };
- if(!globalTimer) {
+        if(!globalTimer) {
             startLockTimer();
- }
+        }
     }
     render(); 
     if(document.getElementById('fav-panel').style.display === 'block') renderFavs();
- }
+}
 
 function startLockTimer() {
     if(globalTimer) clearInterval(globalTimer);
     globalTimer = setInterval(() => { 
         for(var a in lockList) h5gg.setValue(a, lockList[a].value, lockList[a].type); 
     }, lockIntervalMs);
- }
+}
 
 function updateLockSpeed(val) {
     lockIntervalMs = (val && val >= 50) ? parseInt(val) : 200;
     localStorage.setItem('savedLockMs', lockIntervalMs);
- if(globalTimer) {
+    if(globalTimer) {
         startLockTimer();
- }
+    }
 }
 
     function toggleFav(addr, val, type, event) {
         event.stopPropagation();
- if(favList[addr]) delete favList[addr]; else favList[addr] = { value: val, type: type };
+        if(favList[addr]) delete favList[addr]; else favList[addr] = { value: val, type: type };
         render(); if(document.getElementById('fav-panel').style.display === 'block') renderFavs();
- }
+    }
 
     function editInFav() {
         var v = document.getElementById('fav_edit_val').value;
- if(v && selectedAddr) { h5gg.setValue(selectedAddr, v, selectedType); renderFavs(); render(); }
+        if(v && selectedAddr) { h5gg.setValue(selectedAddr, v, selectedType); renderFavs(); render(); }
     }
 
     function editSelected() {
         var v = document.getElementById('new_v').value;
- if(v && selectedAddr) { h5gg.setValue(selectedAddr, v, selectedType); render(); }
+        if(v && selectedAddr) { h5gg.setValue(selectedAddr, v, selectedType); render(); }
     }
 
     function editAll() {
-        var v = document.getElementById('new_v').value;
- if(v) h5gg.editAll(v, cur_t); render();
+        var v = document.getElementById('new_v').value; if(v) h5gg.editAll(v, cur_t); render();
     }
 
     function resetAll() {
         h5gg.clearResults();
- document.getElementById('res-list').innerHTML = "";
+        document.getElementById('res-list').innerHTML = "";
         document.getElementById('edit-panel').style.display = 'none';
         document.getElementById('result-count').innerText = "";
     }
 
     document.addEventListener("copy", e => e.preventDefault());
- document.addEventListener("contextmenu", e => e.preventDefault());
+    document.addEventListener("contextmenu", e => e.preventDefault());
     document.body.style.webkitUserSelect = "none";
 var currentViewingAddr = ""; 
 var currentViewingType = "";
- function viewNearby(baseAddr, type, event) {
+
+function viewNearby(baseAddr, type, event) {
     if(event) event.stopPropagation();
     currentViewingAddr = baseAddr;
     currentViewingType = type;
- let step = (type === 'F64' || type === 'I64') ? 8 : 4;
- let startAddr = BigInt(baseAddr) - BigInt(step * 25); 
+    
+    let step = (type === 'F64' || type === 'I64') ? 8 : 4; 
+    let startAddr = BigInt(baseAddr) - BigInt(step * 25); 
     let html = "";
- for(let i = 0; i < 100; i++) {
+    
+    for(let i = 0; i < 100; i++) {
         let currentAddrBig = startAddr + BigInt(i * step);
- let currentAddrHex = "0x" + currentAddrBig.toString(16);
+        let currentAddrHex = "0x" + currentAddrBig.toString(16);
         let val = lockList[currentAddrHex] ? lockList[currentAddrHex].value : h5gg.getValue(currentAddrHex, type);
         let isL = !!lockList[currentAddrHex];
- let isF = !!favList[currentAddrHex];
+        let isF = !!favList[currentAddrHex];
         let isBase = (currentAddrHex.toLowerCase() === baseAddr.toLowerCase());
-        let style = isBase ?
- "background:rgba(10, 132, 255, 0.2); border-left: 3px solid #0a84ff;" : "";
- html += `
-        <div class="item" style="${style} padding:8px;"
- onclick="selectRow('${currentAddrHex}', '${val}', '${type}', this)">
+        let style = isBase ? "background:rgba(10, 132, 255, 0.2); border-left: 3px solid #0a84ff;" : "";
+        
+        html += `
+        <div class="item" style="${style} padding:8px;" onclick="selectRow('${currentAddrHex}', '${val}', '${type}', this)">
             <div>
                 <span style="font-size:7px; color:#5ac8fa; font-weight:bold">${type}</span>
                 <span style="color:#8e8e93; font-size:9px">...${currentAddrHex.toUpperCase().slice(-8)}</span>
                 <div class="action-btns">
                     <div class="icon-btn ${isL?'locked':''}" onclick="handleNearbyLock('${currentAddrHex}', '${val}', '${type}', event)">${isL?svgLock:svgUnlock}</div>
-     
-                <div class="icon-btn ${isF?'faved':''}" onclick="handleNearbyFav('${currentAddrHex}', '${val}', '${type}', event)">${svgStar}</div>
+                    <div class="icon-btn ${isF?'faved':''}" onclick="handleNearbyFav('${currentAddrHex}', '${val}', '${type}', event)">${svgStar}</div>
                     <div class="icon-btn" style="background:#32d74b" onclick="quickEditNearby('${currentAddrHex}', '${type}', event)">
                         <svg style="width:12px; height:12px; fill:white" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-            
-         </div>
+                    </div>
                 </div>
             </div>
-            <b style="color:#32d74b;
- font-size:12px">${val}</b>
+            <b style="color:#32d74b; font-size:12px">${val}</b>
         </div>`;
     }
     
@@ -984,8 +982,7 @@ function handleNearbyFav(addr, val, type, event) {
 function navNearby(offsetCount) {
     let step = (currentViewingType === 'F64' || currentViewingType === 'I64') ? 8 : 4;
     let newBase = BigInt(currentViewingAddr) + BigInt(step * offsetCount);
-    viewNearby("0x" 
- + newBase.toString(16), currentViewingType);
+    viewNearby("0x" + newBase.toString(16), currentViewingType);
 }
 
 function quickEditNearby(addr, type, event) {
@@ -994,40 +991,41 @@ function quickEditNearby(addr, type, event) {
     if (newVal !== null && newVal !== "") {
         h5gg.setValue(addr, newVal, type);
         viewNearby(currentViewingAddr, currentViewingType);
- }
+    }
 }
 var autoFilterTimer = null;
 
 function toggleAutoFilter() {
     var isChecked = document.getElementById('autoFilterToggle').checked;
     var speedCtrl = document.getElementById('filter-speed-ctrl');
- speedCtrl.style.display = isChecked ? 'flex' : 'none';
+    speedCtrl.style.display = isChecked ? 'flex' : 'none';
 
     if (isChecked) {
         startAutoFilter();
- } else {
+    } else {
         stopAutoFilter();
     }
 }
 
 function startAutoFilter() {
-    stopAutoFilter();
- var interval = parseFloat(document.getElementById('filterSpeedInput').value) * 1000;
-    if (isNaN(interval) || interval < 500) interval = 1500;
- autoFilterTimer = setInterval(function() {
+    stopAutoFilter(); 
+    var interval = parseFloat(document.getElementById('filterSpeedInput').value) * 1000;
+    if (isNaN(interval) || interval < 500) interval = 1500; 
+
+    autoFilterTimer = setInterval(function() {
         var v = document.getElementById('ipt').value;
         if (v) {
             h5gg.searchNumber(v, cur_t, rangeStart, rangeEnd);
             render(); 
         }
     }, interval);
- }
+}
 
 function stopAutoFilter() {
     if (autoFilterTimer) {
         clearInterval(autoFilterTimer);
         autoFilterTimer = null;
- }
+    }
 }
 
 document.getElementById('filterSpeedInput').oninput = function() {
@@ -1035,38 +1033,37 @@ document.getElementById('filterSpeedInput').oninput = function() {
         startAutoFilter();
     }
 };
- function toggleSizeInputs() {
+
+function toggleSizeInputs() {
     var isChecked = document.getElementById('customSizeToggle').checked;
     document.getElementById('size-inputs').style.display = isChecked ? 'flex' : 'none';
- if (isChecked) {
+    
+    if (isChecked) {
         localStorage.setItem('sizeEnabled', 'true');
         updateMenuSize();
- } else {
+    } else {
         localStorage.setItem('sizeEnabled', 'false');
         menuWidth = 300;
         menuHeight = 300;
         centerMenu();
- }
+    }
 }
 
 function updateMenuSize() {
     let w = parseInt(document.getElementById('menuWidth').value);
     let h = parseInt(document.getElementById('menuHeight').value);
- if (w > 500) { w = 500; document.getElementById('menuWidth').value = 500;
- } 
-    else if (w < 100) { w = 100;
- document.getElementById('menuWidth').value = 100;}
 
-    if (h > 500) { h = 500; document.getElementById('menuHeight').value = 500;
- } 
-    else if (h < 100) { h = 100;
- document.getElementById('menuHeight').value = 100;}
+    if (w > 500) { w = 500; document.getElementById('menuWidth').value = 500; } 
+    else if (w < 100) { w = 100; document.getElementById('menuWidth').value = 100;}
+
+    if (h > 500) { h = 500; document.getElementById('menuHeight').value = 500; } 
+    else if (h < 100) { h = 100; document.getElementById('menuHeight').value = 100;}
 
     if (isNaN(w)) w = 300;
     if (isNaN(h)) h = 300;
 
     menuWidth = w;
- menuHeight = h;
+    menuHeight = h;
     
     localStorage.setItem('savedW', w);
     localStorage.setItem('savedH', h);
@@ -1076,40 +1073,39 @@ function updateMenuSize() {
 
 function showH() {
     if (localStorage.getItem('h_enabled') !== 'true') return;
- let history = JSON.parse(localStorage.getItem('h_data') || '[]');
+    let history = JSON.parse(localStorage.getItem('h_data') || '[]');
     if (history.length === 0) return;
 
     let html = "";
- history.forEach(val => {
+    history.forEach(val => {
         html += `<div class="history-item" onclick="setH('${val}')">
                     <span>${val}</span><span style="color:#555">➜</span>
                  </div>`;
     });
- document.getElementById('history-list').innerHTML = html;
+    document.getElementById('history-list').innerHTML = html;
     document.getElementById('history-list').style.display = 'block';
 }
 
-function hideH() { document.getElementById('history-list').style.display = 'none';
- }
+function hideH() { document.getElementById('history-list').style.display = 'none'; }
 
 function setH(val) {
     document.getElementById('ipt').value = val;
     doSearch(false);
- }
+}
 
 function clearH() {
     if(confirm("Xóa sạch lịch sử?")) {
         localStorage.removeItem('h_data');
- alert("Đã xóa!");
+        alert("Đã xóa!");
     }
 }
 
 function saveH(val) {
     if (localStorage.getItem('h_enabled') !== 'true' || !val) return;
- let history = JSON.parse(localStorage.getItem('h_data') || '[]');
+    let history = JSON.parse(localStorage.getItem('h_data') || '[]');
     if (!history.includes(val)) {
         history.unshift(val);
- if (history.length > 10) history.pop();
+        if (history.length > 10) history.pop();
         localStorage.setItem('h_data', JSON.stringify(history));
     }
 }
@@ -1118,8 +1114,9 @@ function doSearch(isRefine) {
     var v = document.getElementById('ipt').value; 
     if(!v) return;
     
-    saveH(v);
- if(!isRefine) h5gg.clearResults();
+    saveH(v); 
+
+    if(!isRefine) h5gg.clearResults();
     h5gg.searchNumber(v, cur_t, rangeStart, rangeEnd);
     render();
 }
@@ -1127,18 +1124,19 @@ function doSearch(isRefine) {
 window.addEventListener('load', function() {
     document.getElementById('historyToggle').checked = localStorage.getItem('h_enabled') === 'true';
 });
- if (fileInput) {
+
+if (fileInput) {
     fileInput.onchange = e => {
         var file = e.target.files[0];
- if (!file) return;
+        if (!file) return;
         var r = new FileReader();
         r.onload = x => {
             musicData = x.target.result;
- audio.src = musicData;
+            audio.src = musicData;
             audio.play().then(() => {
                 updateMusicUI(true); 
             });
- };
+        };
         r.readAsDataURL(file);
     };
 }
@@ -1147,23 +1145,24 @@ function handleToggleMusic() {
     if (audio.src || musicData) {
         if (audio.paused) {
             audio.play();
- updateMusicUI(true);
+            updateMusicUI(true);
         } else {
             audio.pause();
             updateMusicUI(false);
- }
+        }
     } 
 }
 
 function showWarning(msg) {
     const overlay = document.createElement('div');
- Object.assign(overlay.style, {
+    Object.assign(overlay.style, {
         position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
         backgroundColor: 'rgba(0,0,0,0.85)', zIndex: '99999',
         display: 'flex', justifyContent: 'center', alignItems: 'center',
         backdropFilter: 'blur(5px)', color: 'white', fontFamily: 'sans-serif'
     });
- const box = document.createElement('div');
+
+    const box = document.createElement('div');
     box.innerHTML = `
         <div style="text-align:center; padding:20px; border:2px solid #ff453a; border-radius:15px; background:#1c1c1e; width:100%;">
             <h2 style="color:#ff453a; margin-top:0;">⚠️ CẢNH BÁO</h2>
@@ -1171,7 +1170,8 @@ function showWarning(msg) {
             <button onclick="location.reload()" style="background:#ff453a; color:white; border:none; padding:6px 20px; border-radius:16px; font-weight:bold; margin-top:16px;">THỬ LẠI</button>
         </div>
     `;
- overlay.appendChild(box);
+    
+    overlay.appendChild(box);
     document.body.appendChild(overlay);
 }
 
@@ -1183,34 +1183,38 @@ window.addEventListener('load', function () {
         showWarning("Phát hiện môi trường không hợp lệ!<br>Vui lòng chạy Script này bên trong ứng dụng <b>h5gg</b> để sử dụng.");
     }
 });
- var dragTitle = document.querySelector('.header-title');
+
+var dragTitle = document.querySelector('.header-title');
 var dragMenu = document.getElementById('main-menu');
 var menuWidth = 300; 
-var menuHeight = 300;
- function centerMenu() {
+var menuHeight = 300; 
+
+function centerMenu() {
     var screenW = window.screen.width;
     var screenH = window.screen.height;
- var actualW = (Math.abs(window.orientation) == 90) ? Math.max(screenW, screenH) : Math.min(screenW, screenH);
-    var actualH = (Math.abs(window.orientation) == 90) ?
- Math.min(screenW, screenH) : Math.max(screenW, screenH);
+    
+    var actualW = (Math.abs(window.orientation) == 90) ? Math.max(screenW, screenH) : Math.min(screenW, screenH);
+    var actualH = (Math.abs(window.orientation) == 90) ? Math.min(screenW, screenH) : Math.max(screenW, screenH);
 
     var startX = (actualW - menuWidth) / 2;
- var startY = (actualH - menuHeight) / 2;
+    var startY = (actualH - menuHeight) / 2;
 
     if (typeof h5gg !== "undefined") {
         setWindowRect(startX, startY, menuWidth, menuHeight);
- setWindowDrag(0, 0, menuWidth, 38);
+        setWindowDrag(0, 0, menuWidth, 38);
     }
 }
 
 window.addEventListener("orientationchange", function() {
     setTimeout(centerMenu, 200); 
 }, false);
- document.querySelectorAll('input').forEach(function(input) {
+
+document.querySelectorAll('input').forEach(function(input) {
     input.addEventListener('focus', function(e) {
     });
 });
- document.body.addEventListener('touchstart', function(e) {
+
+document.body.addEventListener('touchstart', function(e) {
     if (e.touches.length === 3) {
         var currentTime = new Date().getTime();
         var tapLength = currentTime - lastTapTime;
@@ -1221,15 +1225,14 @@ window.addEventListener("orientationchange", function() {
         }
         lastTapTime = currentTime;
     }
-}, { 
- passive: false });
+}, { passive: false });
 
 function resetMenuPositionAndSize() {
     menuWidth = 300;
     menuHeight = 300;
     
     document.getElementById('menuWidth').value = 300;
- document.getElementById('menuHeight').value = 300;
+    document.getElementById('menuHeight').value = 300;
     document.getElementById('customSizeToggle').checked = false;
     document.getElementById('size-inputs').style.display = 'none';
 
@@ -1238,37 +1241,41 @@ function resetMenuPositionAndSize() {
     localStorage.setItem('savedH', 300);
 
     centerMenu();
- }
+}
 
 function applyBorderRainbow() {
     var isChecked = document.getElementById('borderRbToggle').checked;
     var menu = document.getElementById('main-menu');
- if(isChecked) {
+    
+    if(isChecked) {
         menu.classList.add('border-rainbow-active');
- } else {
+    } else {
         menu.classList.remove('border-rainbow-active');
         menu.style.border = "1px solid #444";
         menu.style.boxShadow = "none";
- }
+    }
 }
 document.getElementById('borderRbToggle').checked = localStorage.getItem('borderRb_enabled') === 'true';
 applyBorderRainbow();
 
 let audioCtx, analyser, source, dataArray, canvas, ctx;
 let waveRunning = false;
- function initWave() {
+
+function initWave() {
     if (audioCtx) return;
 
     canvas = document.getElementById("music-visualizer");
     let menu = document.getElementById("main-menu");
- if (!canvas || !menu) return; 
+
+    if (!canvas || !menu) return; 
 
     ctx = canvas.getContext("2d");
     resizeWaveCanvas();
 
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     analyser = audioCtx.createAnalyser();
- source = audioCtx.createMediaElementSource(audio);
+
+    source = audioCtx.createMediaElementSource(audio);
     source.connect(analyser);
     analyser.connect(audioCtx.destination);
 
@@ -1276,13 +1283,13 @@ let waveRunning = false;
 
     let bufferLength = analyser.frequencyBinCount;
     dataArray = new Uint8Array(bufferLength);
- }
+}
 
 function resizeWaveCanvas() {
     let menu = document.getElementById("main-menu");
     let canvasEl = document.getElementById("music-visualizer");
-    if (!menu || !canvasEl) return;
- canvasEl.width = menu.clientWidth;
+    if (!menu || !canvasEl) return; 
+    canvasEl.width = menu.clientWidth;
     canvasEl.height = menu.clientHeight;
 }
 
@@ -1292,33 +1299,36 @@ function drawWave() {
     if (!waveRunning) return;
     requestAnimationFrame(drawWave);
     analyser.getByteTimeDomainData(dataArray);
- ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.lineWidth = 3; 
     ctx.lineCap = "round";
 
     let useRainbow = document.getElementById("rbToggle")?.checked;
- if (useRainbow) {
+    
+    if (useRainbow) {
         let time = Date.now() / 500;
- let color = `hsl(${time % 360}, 100%, 50%)`; 
+        let color = `hsl(${time % 360}, 100%, 50%)`; 
         ctx.strokeStyle = color;
         ctx.shadowBlur = 15;        
-        ctx.shadowColor = color;
- } else {
+        ctx.shadowColor = color;    
+    } else {
         ctx.strokeStyle = "#00ffff"; 
         ctx.shadowBlur = 10;
         ctx.shadowColor = "#00ffff";
- }
+    }
 
     ctx.beginPath();
     let sliceWidth = canvas.width / dataArray.length;
     let x = 0;
- for (let i = 0; i < dataArray.length; i++) {
+
+    for (let i = 0; i < dataArray.length; i++) {
         let v = dataArray[i] / 128.0;
- let y = v * canvas.height / 2;
+        let y = v * canvas.height / 2;
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
         x += sliceWidth;
- }
+    }
 
     ctx.stroke(); 
     ctx.stroke(); 
@@ -1327,12 +1337,11 @@ function drawWave() {
 
 function toggleWave() {
     let isOn = document.getElementById("waveToggle").checked;
- let canvasEl = document.getElementById("music-visualizer");
+    let canvasEl = document.getElementById("music-visualizer");
     let warningEl = document.getElementById("waveWarning");
 
     canvasEl.style.display = isOn ? "block" : "none";
-    warningEl.style.display = isOn ?
- "block" : "none"; 
+    warningEl.style.display = isOn ? "block" : "none"; 
     localStorage.setItem("wave_enabled", isOn);
 
     if (isOn) {
@@ -1342,61 +1351,61 @@ function toggleWave() {
             waveRunning = true;
             drawWave();
         }, 100);
- } else {
+    } else {
         waveRunning = false;
- }
+    }
 }
 
 function unlockAudio() {
     if (!audioCtx) return;
     if (audioCtx.state === "suspended") {
         audioCtx.resume();
- }
+    }
 }
 function renderOldVersions() {
     var h = "";
- for(var i = 1; i <= 5; i++) {
+    for(var i = 1; i <= 5; i++) {
         h += `<div class="item" onclick="loadOldVersion(${i})" style="cursor:pointer">
             <div style="display:flex; align-items:center; gap:10px;">
                 <span style="font-size:12px; color:#5ac8fa; font-weight:bold">v${i}</span>
                 <span style="color:#e5e5ea; font-size:11px">Memory Editer Pro (Bản cũ v${i})</span>
             </div>
-          
-             <span style="color:#5ac8fa">➜</span>
+            <span style="color:#5ac8fa">➜</span>
         </div>`;
     }
     document.getElementById('old-version-list').innerHTML = h;
- }
+}
 async function loadOldVersion(v) {
     const url = `https://raw.githubusercontent.com/Long373/oldversion/refs/heads/main/v${v}.html`;
- document.body.innerHTML = `
+    document.body.innerHTML = `
         <div style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#1a1a1a; color:#0f0; font-family:sans-serif; position:fixed; top:0; left:0; width:100%;border-radius:15px;z-index:10000;">
             <div style="width:70px; height:70px; border:6px solid #333; border-top:6px solid #0f0; border-radius:50%; animation: spin 1s linear infinite;"></div>
             <div style="text-align:center; margin-top:20px;">
                 <p style="margin:0; font-size:14px; font-weight:700; letter-spacing:1px;">MEMORY EDITER PRO</p>
-                
- <p style="margin:5px 0 0; font-size:11px; color:#fff;" id="load-status">Đang tải phiên bản v${v}...</p>
+                <p style="margin:5px 0 0; font-size:11px; color:#fff;" id="load-status">Đang tải phiên bản v${v}...</p>
             </div>
-            <style>@keyframes spin { to { transform: rotate(360deg);
- } }</style>
+            <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
         </div>
     `;
- try { 
+
+    try { 
         const response = await fetch(url);
- if (!response.ok) {
+        
+        if (!response.ok) {
             throw new Error("Không tìm thấy file");
- }
+        }
 
         const code = await response.text();
-        const status = document.getElementById("load-status");
- status.innerText = "Đang khởi động...";
+        const status = document.getElementById("load-status"); 
+        status.innerText = "Đang khởi động...";
         await new Promise(res => setTimeout(res, 600)); 
         document.open();
         document.write(code);
         document.close();
- } catch (err) {
+
+    } catch (err) {
         alert("Lỗi: Không thể tải bản v" + v + "\n(Có thể file chưa được tải lên hoặc lỗi mạng)");
- location.reload();
+        location.reload();
     }
 }
 //https://pastefy.app/zbSxssMc/raw
